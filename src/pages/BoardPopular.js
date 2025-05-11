@@ -1,7 +1,7 @@
 import React from "react";
 
 function BoardPopular() {
-  return <div></div>;
+  return <div>123 abc</div>;
 }
 
 export default BoardPopular;
