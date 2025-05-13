@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import groupImage from "../../assets/group.png"
+import groupImage from "../../assets/group.png";
 
 const ManageGroupContainer = styled.div`
     width: 1155px;
