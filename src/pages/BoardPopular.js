@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import fav from '../src/fav.png';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import fav from "../assets/fav.png";
 
 const Container = styled.div`
-  background-color: #D8CDB9;
+  background-color: #d8cdb9;
   min-height: 100vh;
   padding: 20px 40px;
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
 `;
 
 const SearchBox = styled.div`
@@ -36,7 +36,7 @@ const PostGrid = styled.div`
 const PostCard = styled.div`
   width: 200px;
   height: 180px;
-  background-color: #F8F1E7;
+  background-color: #f8f1e7;
   border-radius: 20px;
   display: flex;
   justify-content: center;
@@ -70,7 +70,6 @@ export default function BoardPopular() {
 
   return (
     <Container>
-
       <SearchBox>
         <SearchInput placeholder="게시글 제목 또는 내용을 입력해주세요" />
       </SearchBox>
