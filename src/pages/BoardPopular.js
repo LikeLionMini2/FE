@@ -1,54 +1,130 @@
-import React from "react";
-import masked from "../assets/masked.png";
-import fav from "../assets/fav.png";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import masked from '../src/masked.png';
+import fav from '../src/fav.png';
 
-function BoardPopular() {
+const Container = styled.div`
+  background-color: #D8CDB9;
+  min-height: 100vh;
+  padding: 20px 40px;
+  font-family: 'Noto Sans KR', sans-serif;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Logo = styled.h1`
+  font-size: 35px;
+  font-family: 'Figma Hand', cursive;
+`;
+
+const Nav = styled.div`
+  display: flex;
+  gap: 24px;
+  font-size: 23px;
+  font-family: 'Figma Hand', cursive;
+`;
+
+const NavItem = styled.span`
+  cursor: pointer;
+`;
+
+const MaskedIcon = styled.img`
+  width: 40px;
+  height: 40px;
+  margin-left: 12px;
+`;
+
+const SearchBox = styled.div`
+  margin: 40px auto 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SearchInput = styled.input`
+  width: 500px;
+  height: 40px;
+  padding: 0 16px;
+  font-size: 24px;
+  border: none;
+  border-radius: 20px;
+  outline: none;
+`;
+
+const PostGrid = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 30px;
+`;
+
+const PostCard = styled.div`
+  width: 200px;
+  height: 180px;
+  background-color: #F8F1E7;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+`;
+
+const EmptySection = styled.div`
+  text-align: center;
+  margin-top: 60px;
+`;
+
+const EmptyImage = styled.img`
+  width: 100px;
+  height: auto;
+  margin-bottom: 16px;
+`;
+
+const EmptyText = styled.p`
+  font-size: 36px;
+  font-weight: 500;
+`;
+
+export default function BoardPopular() {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    // 실제 데이터로 대체 가능
+    setPosts([]);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#D8CDB9] font-['Noto_Sans_KR']">
-      {/* 상단 네비게이션 */}
-      <div className="flex justify-between items-center px-6 py-4">
-        {/* 로고 */}
-        <h1 className="text-[35px] font-bold font-['Figma_Hand_Bold']">ManittoTie</h1>
-        {/* 메뉴 */}
-        <div className="flex items-center gap-6 text-[23px] font-['Figma_Hand_Bold']">
-          <a href="#">Group</a>
-          <a href="#">Manage</a>
-          <a href="#">Mypage</a>
-          <img src={masked} alt="masked rabbit icon" className="w-6 h-6" />
-        </div>
-      </div>
+    <Container>
+      <Header>
+        <Logo>ManittoTie</Logo>
+        <Nav>
+          <NavItem>Group</NavItem>
+          <NavItem>Manage</NavItem>
+          <NavItem>Mypage</NavItem>
+          <MaskedIcon src={masked} alt="profile" />
+        </Nav>
+      </Header>
 
-      {/* 검색창 */}
-      <div className="flex justify-center my-6">
-        <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-md w-1/2 max-w-xl">
-          <span className="text-gray-400 mr-2">🔍</span>
-          <input
-            type="text"
-            placeholder="게시글 제목 또는 내용을 입력해주세요"
-            className="w-full bg-transparent outline-none text-[24px] font-medium"
-          />
-        </div>
-      </div>
+      <SearchBox>
+        <SearchInput placeholder="게시글 제목 또는 내용을 입력해주세요" />
+      </SearchBox>
 
-      {/* 인기글 카드 */}
-      <div className="flex justify-center gap-6 mt-6 px-4">
-        {["TOP1", "TOP2", "TOP3"].map((rank) => (
-          <div
-            key={rank}
-            className="bg-[#F8F1E7] rounded-xl w-40 h-40 shadow-md flex items-center justify-center"
-          >
-            <span className="text-[24px] font-medium">인기글 {rank}</span>
-          </div>
-        ))}
-      </div>
+      <PostGrid>
+        <PostCard>인기글 TOP1</PostCard>
+        <PostCard>인기글 TOP2</PostCard>
+        <PostCard>인기글 TOP3</PostCard>
+      </PostGrid>
 
-      {/* 검색 결과 없음 */}
-      <div className="flex flex-col items-center mt-10">
-        <img src={fav} alt="검색 결과 없음 이미지" className="w-20 h-20 mb-2" />
-        <p className="text-[36px] font-medium">검색 결과가 없어요</p>
-      </div>
-    </div>
+      {posts.length === 0 && (
+        <EmptySection>
+          <EmptyImage src={fav} alt="검색결과 없음 토끼" />
+          <EmptyText>검색 결과가 없어요</EmptyText>
+        </EmptySection>
+      )}
+    </Container>
   );
 }
-
-export default BoardPopular;
