@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import masked from '../src/masked.png';
 import fav from '../src/fav.png';
 
 const Container = styled.div`
@@ -8,34 +7,6 @@ const Container = styled.div`
   min-height: 100vh;
   padding: 20px 40px;
   font-family: 'Noto Sans KR', sans-serif;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Logo = styled.h1`
-  font-size: 35px;
-  font-family: 'Figma Hand', cursive;
-`;
-
-const Nav = styled.div`
-  display: flex;
-  gap: 24px;
-  font-size: 23px;
-  font-family: 'Figma Hand', cursive;
-`;
-
-const NavItem = styled.span`
-  cursor: pointer;
-`;
-
-const MaskedIcon = styled.img`
-  width: 40px;
-  height: 40px;
-  margin-left: 12px;
 `;
 
 const SearchBox = styled.div`
@@ -99,15 +70,6 @@ export default function BoardPopular() {
 
   return (
     <Container>
-      <Header>
-        <Logo>ManittoTie</Logo>
-        <Nav>
-          <NavItem>Group</NavItem>
-          <NavItem>Manage</NavItem>
-          <NavItem>Mypage</NavItem>
-          <MaskedIcon src={masked} alt="profile" />
-        </Nav>
-      </Header>
 
       <SearchBox>
         <SearchInput placeholder="게시글 제목 또는 내용을 입력해주세요" />
