@@ -72,7 +72,7 @@ export default function BoardPopular() {
     <Container>
 
       <SearchBox>
-        <SearchInput placeholder="게시글 제목 또는 내용을 입력해주세요" />
+        <SearchInput placeholder="게시글 제목 or 내용을 입력해주세요" />
       </SearchBox>
 
       <PostGrid>
