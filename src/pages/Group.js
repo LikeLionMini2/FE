@@ -10,12 +10,16 @@ const GroupContainer = styled.div`
   height: 720px;
   margin: 0 auto;
   overflow: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const Title = styled.div`
   position: absolute;
   left: 60px;
-  top: ${props => props.top || 'auto'};
+  top: ${(props) => props.top || "auto"};
   font-family: "Damion", cursive;
   font-weight: 500;
   font-size: 48px;
@@ -69,7 +73,7 @@ const GroupMakeButtonText = styled(Link)`
   color: #ffffff;
 
   &:hover {
-      color: rgba(48, 48, 48, 0.5);
+    color: rgba(48, 48, 48, 0.5);
   }
 `;
 
@@ -86,34 +90,16 @@ function Group() {
         <MyGroup name={"마니또"} />
       </MyGroupContainer>
       <GroupMakeButtonWrapper>
-          <GroupMakeButtonText to="/group/make">그룹 생성</GroupMakeButtonText>
+        <GroupMakeButtonText to="/group/make">그룹 생성</GroupMakeButtonText>
       </GroupMakeButtonWrapper>
       <Title top="300px">All Groups</Title>
       <AllGroupContainer>
-        <AllGroup 
-          name={"마니또"}
-          memberCount={10}
-        />
-        <AllGroup 
-          name={"마니또"}
-          memberCount={10}
-        />
-        <AllGroup 
-          name={"마니또"}
-          memberCount={10}
-        />
-        <AllGroup 
-          name={"마니또"}
-          memberCount={10}
-        />
-        <AllGroup 
-          name={"마니또"}
-          memberCount={10}
-        />
-        <AllGroup 
-          name={"마니또"}
-          memberCount={10}
-        />
+        <AllGroup name={"마니또"} memberCount={10} />
+        <AllGroup name={"마니또"} memberCount={10} />
+        <AllGroup name={"마니또"} memberCount={10} />
+        <AllGroup name={"마니또"} memberCount={10} />
+        <AllGroup name={"마니또"} memberCount={10} />
+        <AllGroup name={"마니또"} memberCount={10} />
       </AllGroupContainer>
     </GroupContainer>
   );

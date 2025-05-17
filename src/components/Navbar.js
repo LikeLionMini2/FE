@@ -7,14 +7,15 @@ import carrot from "../assets/carrot.png";
 import { BiCart } from "react-icons/bi";
 
 const NavBarContainer = styled.nav`
-  width: 100vw;
+  width: 100%;
   max-width: 1216px;
   height: 60px;
-  background-color: none;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 24px;
+  padding-top: 24px;
+  margin: 0 auto;
 `;
 
 const Logo = styled(Link)`
