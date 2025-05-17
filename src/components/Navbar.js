@@ -17,11 +17,12 @@ const NavBarContainer = styled.nav`
   margin-top: 24px;
 `;
 
-const Logo = styled.div`
+const Logo = styled(Link)`
   font-family: "Damion", cursive;
   font-size: 48px;
   font-weight: 500;
   color: #000;
+  cursor: pointer;
 `;
 
 const LinkContainer = styled.div`
@@ -123,7 +124,7 @@ const NavBar = () => {
 
   return (
     <NavBarContainer>
-      <Logo>ManittoTie</Logo>
+      <Logo to="/">ManittoTie</Logo>
       <LinkContainer>
         <NavLinks>
           <NavLink to="/group">Group</NavLink>
