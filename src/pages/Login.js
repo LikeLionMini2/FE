@@ -11,6 +11,11 @@ function Login({ idValue, onIdChange, pwValue, onPwChange }) {
     navigate("/signup"); // 회원가입 페이지로
   };
 
+  const handleLoginClick = () => {
+    alert("로그인 성공~");
+    navigate("/group"); // 그룹 페이지로
+  };
+
   return (
     <>
       <MainContainer>
@@ -32,7 +37,7 @@ function Login({ idValue, onIdChange, pwValue, onPwChange }) {
             placeholder="비밀번호를 작성해주세요."
           />
           <FailTo>비밀번호가 틀렸습니다.</FailTo>
-          <LoginButton>로그인</LoginButton>
+          <LoginButton onClick={handleLoginClick}>로그인</LoginButton>
           <TextContainer>
             <NormalText>회원이 아니신가요?</NormalText>
             <SignupText onClick={handleSignupClick}>회원가입</SignupText>
