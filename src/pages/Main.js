@@ -66,7 +66,7 @@ const AuthLinks = styled.div`
   position: absolute;
   left: 775px;
   top: 558px;
-  font-family: "Noto Sans", sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
   font-weight: 500;
   font-size: 24px;
   letter-spacing: 0.05em;
