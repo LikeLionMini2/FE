@@ -18,7 +18,6 @@ const GroupDetailContainer = styled.div`
 const GroupCardContainer = styled.div`
   width: 370px;
   height: 515px;
-  // margin-top: 50px;
   padding: 50px 65px;
   border-radius: 20px;
   background: #FFF;
@@ -75,7 +74,7 @@ const GroupJoinButtonText = styled(Link)`
   color: #ffffff;
 
   &:hover {
-      color: rgba(48, 48, 48, 0.5);
+    color: rgba(48, 48, 48, 0.5);
   }
 `;
 
