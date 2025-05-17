@@ -32,9 +32,7 @@ function Login({ idValue, onIdChange, pwValue, onPwChange }) {
             placeholder="비밀번호를 작성해주세요."
           />
           <FailTo>비밀번호가 틀렸습니다.</FailTo>
-          <LoginButton>
-            <ButtonText>로그인</ButtonText>
-          </LoginButton>
+          <LoginButton>로그인</LoginButton>
           <TextContainer>
             <NormalText>회원이 아니신가요?</NormalText>
             <SignupText onClick={handleSignupClick}>회원가입</SignupText>
@@ -97,18 +95,20 @@ const LoginButton = styled.button`
   background: #ffffff;
   border-radius: 50px;
   border: none;
-`;
-
-const ButtonText = styled.div`
-  width: 81px;
-  height: 29.41px;
-  margin-left: 73px;
   font-family: "Noto Sans KR";
   font-style: normal;
   font-weight: 700;
   font-size: 26px;
   line-height: 31px;
   color: #e06a34;
+  &:active {
+    background-color: #e06a34;
+    color: #ffffff;
+  }
+  &:hover {
+    background-color: #e06a34;
+    color: #ffffff;
+  }
 `;
 
 const TextContainer = styled.div`
