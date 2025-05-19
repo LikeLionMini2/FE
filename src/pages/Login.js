@@ -11,6 +11,11 @@ function Login({ idValue, onIdChange, pwValue, onPwChange }) {
     navigate("/signup"); // 회원가입 페이지로
   };
 
+  const handleLoginClick = () => {
+    alert("로그인 성공~");
+    navigate("/group"); // 그룹 페이지로
+  };
+
   return (
     <>
       <MainContainer>
@@ -32,9 +37,7 @@ function Login({ idValue, onIdChange, pwValue, onPwChange }) {
             placeholder="비밀번호를 작성해주세요."
           />
           <FailTo>비밀번호가 틀렸습니다.</FailTo>
-          <LoginButton>
-            <ButtonText>로그인</ButtonText>
-          </LoginButton>
+          <LoginButton onClick={handleLoginClick}>로그인</LoginButton>
           <TextContainer>
             <NormalText>회원이 아니신가요?</NormalText>
             <SignupText onClick={handleSignupClick}>회원가입</SignupText>
@@ -97,18 +100,20 @@ const LoginButton = styled.button`
   background: #ffffff;
   border-radius: 50px;
   border: none;
-`;
-
-const ButtonText = styled.div`
-  width: 81px;
-  height: 29.41px;
-  margin-left: 73px;
   font-family: "Noto Sans KR";
   font-style: normal;
   font-weight: 700;
   font-size: 26px;
   line-height: 31px;
   color: #e06a34;
+  &:active {
+    background-color: #e06a34;
+    color: #ffffff;
+  }
+  &:hover {
+    background-color: #e06a34;
+    color: #ffffff;
+  }
 `;
 
 const TextContainer = styled.div`

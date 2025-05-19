@@ -7,21 +7,23 @@ import carrot from "../assets/carrot.png";
 import { BiCart } from "react-icons/bi";
 
 const NavBarContainer = styled.nav`
-  width: 100vw;
+  width: 100%;
   max-width: 1216px;
   height: 60px;
-  background-color: none;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 24px;
+  padding-top: 24px;
+  margin: 0 auto;
 `;
 
-const Logo = styled.div`
+const Logo = styled(Link)`
   font-family: "Damion", cursive;
   font-size: 48px;
   font-weight: 500;
   color: #000;
+  cursor: pointer;
 `;
 
 const LinkContainer = styled.div`
@@ -123,7 +125,7 @@ const NavBar = () => {
 
   return (
     <NavBarContainer>
-      <Logo>ManittoTie</Logo>
+      <Logo to="/">ManittoTie</Logo>
       <LinkContainer>
         <NavLinks>
           <NavLink to="/group">Group</NavLink>

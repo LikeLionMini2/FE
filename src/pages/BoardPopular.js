@@ -5,13 +5,20 @@ import fav from "../assets/fav.png";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
+// const Container = styled.div`
+//   background-color: #d8cdb9;
+//   min-height: 100vh;
+//   padding: 20px 40px;
+//   font-family: 'Noto Sans KR', sans-serif;
+// `;
+
 const Container = styled.div`
   position: relative;
   width: 1280px;
   height: 720px;
   background: #d8cdb9;
   overflow: hidden;
-  margin: 0 auto;
+  /* padding: 20px 40px; */
 `;
 
 const SearchBox = styled.div`
@@ -23,11 +30,12 @@ const SearchBox = styled.div`
 const SearchContainer = styled.div`
   display: flex;
   align-items: center;
-  background-color: white;
+  background-color: #f8f1e7;
   border-radius: 30px;
   padding: 0 20px;
   width: 600px;
   height: 50px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const SearchIcon = styled(FaSearch)`
@@ -45,6 +53,11 @@ const SearchInput = styled.input`
   text-align: center;
   line-height: 50px;
   height: 50px;
+
+  &::placeholder {
+    color: #000;
+    font-weight: 400;
+  }
 `;
 
 const ClearButton = styled(IoMdClose)`
@@ -58,10 +71,12 @@ const PostGrid = styled.div`
   display: flex;
   justify-content: center;
   gap: 82px;
-  margin-top: 44px;
   max-width: 1120px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+`;
+
+const PostCardWrapper = styled.div`
+  margin-top: ${(props) => props.top || "0px"};
 `;
 
 const PostCard = styled.div`
@@ -81,16 +96,15 @@ const EmptySection = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 44px; // 카드와의 거리
-  margin-bottom: 116px; // 하단 여백
-  gap: 85px; // 토끼 ↔ 텍스트 가로 거리
-  flex-direction: row; // 반드시 수평 정렬
+  margin-top: 44px;
+  margin-bottom: 116px;
+  gap: 85px;
+  flex-direction: row;
 `;
 
 const EmptyImage = styled.img`
   width: 150px;
   height: auto;
-  /* aspect-ratio: 0.55; */
   object-fit: contain;
 `;
 
@@ -111,8 +125,7 @@ export default function BoardPopular() {
   const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
-    // 실제 인기글 API 데이터로 대체 가능
-    setPosts([]); // 검색 결과 없음 표시
+    setPosts([]); // 실제 데이터로 대체 가능
   }, []);
 
   const clearInput = () => setKeyword("");
@@ -132,9 +145,21 @@ export default function BoardPopular() {
       </SearchBox>
 
       <PostGrid>
-        <PostCard>인기글 TOP1</PostCard>
-        <PostCard>인기글 TOP2</PostCard>
-        <PostCard>인기글 TOP3</PostCard>
+        <PostCardWrapper top="0px">
+          {" "}
+          {/* Top1 */}
+          <PostCard>인기글 TOP1</PostCard>
+        </PostCardWrapper>
+        <PostCardWrapper top="6px">
+          {" "}
+          {/* Top2 */}
+          <PostCard>인기글 TOP2</PostCard>
+        </PostCardWrapper>
+        <PostCardWrapper top="12px">
+          {" "}
+          {/* Top3 */}
+          <PostCard>인기글 TOP3</PostCard>
+        </PostCardWrapper>
       </PostGrid>
 
       {posts.length === 0 && (

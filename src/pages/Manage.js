@@ -8,6 +8,10 @@ const ManageContainer = styled.div`
   height: 720px;
   margin: 0 auto;
   overflow: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const Title = styled.div`
@@ -38,6 +42,11 @@ function Manage() {
     <ManageContainer>
       <Title>Manage</Title>
       <ManageGroupContainer>
+        <ManageGroup
+          name={"마니또"}
+          memberCount={10}
+          description={"그룹에 대한 설명 어쩌구 저쩌구..."}
+        />
         <ManageGroup
           name={"마니또"}
           memberCount={10}
