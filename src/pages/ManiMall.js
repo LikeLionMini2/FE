@@ -81,7 +81,7 @@ export default function ManiMall() {
     { name: "맘스터치 싸이순살세트", price: "6700캐롯" },
   ];
 
-  const filteredProducts = products.filter(product =>
+  const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
