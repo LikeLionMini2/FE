@@ -9,11 +9,15 @@ const ManageDetailContainer = styled.div`
   height: 720px;
   margin-top: 60px;
   overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
   gap: 55px;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const GroupDetailContainer = styled.div`
@@ -105,6 +109,7 @@ function ManageDetail() {
           </GroupInfoContainer>
         </GroupContainer>
         <MemberMatchInfoContainer>
+          <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
           <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
           <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
           <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
