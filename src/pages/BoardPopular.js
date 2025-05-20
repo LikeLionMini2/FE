@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import masked from '../src/masked.png';
-import fav from '../src/fav.png';
+import masked from '../assets/masked.png';
+import fav from '../assets/fav.png';
 
 const Container = styled.div`
   background-color: #D8CDB9;
