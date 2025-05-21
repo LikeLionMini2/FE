@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import { FaRegHeart, FaHeart, FaRegCommentDots } from "react-icons/fa";
 
 const Container = styled.div`
+  max-width: 1280px;
+  width: 100%;
+  min-height: 832px;
   background-color: #D8CDB9;
-  min-height: 100vh;
   padding-left: 82px;
   padding-top: 121px;
   font-family: "Noto Sans KR", sans-serif;
   position: relative;
+  margin: 0 auto;
+  box-sizing: border-box;
 `;
 
 const Box = styled.div`
@@ -117,31 +122,36 @@ const CommentInput = styled.input`
 
 const BoardDetail = () => {
   const [liked, setLiked] = useState(false);
+  const navigate = useNavigate();
+
+  const handleEditClick = () => {
+    navigate("/board/upload");
+  };
 
   return (
     <Container>
-      {/* Box 1: 제목 */}
+      {/* 제목 박스 */}
       <TitleBox height={80}>
         게시글 제목: 아 나 마니또 누군지 알 것 같은데? [3]
       </TitleBox>
 
-      {/* Box 2: 본문 */}
+      {/* 본문 박스 */}
       <ContentBox height={218} marginTop={43}>
         <ContentLabel>게시글 내용</ContentLabel>
         <PostContent>
           일단 2팀에 있는 것 같은데 맞을까? 뭔가 확 느껴지는 부분이 있었어!! ㅎㅎㅎ
         </PostContent>
-        <EditButton>게시글 수정/삭제</EditButton>
+        <EditButton onClick={handleEditClick}>게시글 수정/삭제</EditButton>
       </ContentBox>
 
-      {/* Box 3: 댓글 */}
+      {/* 댓글 박스 */}
       <CommentBox height={170} marginTop={31}>
         댓글 1: 악 ㅋㅋㅋㅋㅋㅋ 너 어떻게 안 거야? <br />
         • 작성자: 아, 마니또가 쪽지 남겼는데 그 쪽지에서 특유의 말투가 느껴졌어 ㅋㅋㅋㅋㅋㅋ <br />
         댓글 2: 일단 모르는 척 하자 ㅎㅎㅎㅎ
       </CommentBox>
 
-      {/* Reaction icons */}
+      {/* 하트 / 댓글 아이콘 */}
       <ReactionWrapper>
         <HeartIcon onClick={() => setLiked(!liked)}>
           {liked ? <FaHeart color="black" /> : <FaRegHeart />}
@@ -151,7 +161,7 @@ const BoardDetail = () => {
         </CommentIcon>
       </ReactionWrapper>
 
-      {/* Box 4: 댓글 입력 */}
+      {/* 댓글 입력창 */}
       <CommentInputBox>
         <CommentInput placeholder="댓글 달기" />
       </CommentInputBox>
@@ -160,3 +170,4 @@ const BoardDetail = () => {
 };
 
 export default BoardDetail;
+
