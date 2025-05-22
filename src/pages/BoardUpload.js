@@ -1,32 +1,35 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-const Container = styled.div`
+// ✅ 전체 배경 컨테이너
+const OuterContainer = styled.div`
   background-color: #D8CDB9;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  font-family: 'Noto Sans KR', sans-serif;
 `;
 
+// ✅ 흰색 박스
 const WhiteBox = styled.div`
-  background-color: white;
+  background-color: #FFFFFF;
   width: 1152px;
   height: 560px;
   border-radius: 15px;
-  padding: 0 60px;
+  padding: 42px 60px 0 60px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 `;
 
+// ✅ 입력 섹션
 const FormSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 57px; /* 회색 박스 간 간격 */
-  margin-top: 42px;     /* 흰 박스 위 ↔ 첫 회색 박스 */
-  margin-bottom: 42px;  /* 두 번째 회색 박스 ↔ 흰 박스 아래 */
+  gap: 57px;
 `;
 
 const InputRow = styled.div`
@@ -34,25 +37,26 @@ const InputRow = styled.div`
 `;
 
 const Label = styled.label`
-  font-size: 16px;
-  font-weight: 600;
-  width: 100px;
+  font-size: 24px;
+  font-weight: 700;
+  width: 130px;
   margin-right: 25px;
+  white-space: nowrap;
 `;
 
 const TitleLabel = styled(Label)`
-  margin-top: 22px; /* 제목 입력칸(70px)의 중앙 정렬처럼 보이게 */
+  margin-top: 22px;
 `;
 
 const ContentLabel = styled(Label)`
-  margin-top: 4px; /* 내용 입력칸(349px)의 상단과 정렬되게 */
+  margin-top: 4px;
 `;
 
 const TitleInput = styled.input`
   width: 919px;
   height: 70px;
   border-radius: 20px;
-  background-color: #EDEDED;
+  background-color: #E0DFDD;
   border: none;
   padding: 0 20px;
   font-size: 16px;
@@ -62,14 +66,16 @@ const ContentTextarea = styled.textarea`
   width: 919px;
   height: 349px;
   border-radius: 20px;
-  background-color: #EDEDED;
+  background-color: #E0DFDD;
   border: none;
   padding: 20px;
   font-size: 16px;
   resize: none;
 `;
 
+// ✅ 버튼 영역 (WhiteBox 바깥)
 const ButtonWrapper = styled.div`
+  width: 1152px;
   display: flex;
   justify-content: flex-end;
   margin-top: 28px;
@@ -78,18 +84,24 @@ const ButtonWrapper = styled.div`
 const Button = styled.button`
   width: 192px;
   height: 60px;
-  background-color: #E27942;
+  background-color: #E06A34;
   color: white;
   border: none;
   border-radius: 60px;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 700;
   cursor: pointer;
 `;
 
 function BoardUpload() {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/Board'); // 원하는 페이지로 이동
+  };
+
   return (
-    <Container>
+    <OuterContainer>
       <WhiteBox>
         <FormSection>
           <InputRow>
@@ -101,12 +113,12 @@ function BoardUpload() {
             <ContentTextarea />
           </InputRow>
         </FormSection>
-
-        <ButtonWrapper>
-          <Button>완료</Button>
-        </ButtonWrapper>
       </WhiteBox>
-    </Container>
+
+      <ButtonWrapper>
+        <Button onClick={handleClick}>완료</Button>
+      </ButtonWrapper>
+    </OuterContainer>
   );
 }
 

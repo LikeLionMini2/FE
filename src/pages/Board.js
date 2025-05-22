@@ -1,13 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
 const Wrapper = styled.div`
   background-color: #d8cdb9;
-  min-height: 100vh;
+  width: 100%;
+  height: 832px;
   padding: 40px 60px;
+  box-sizing: border-box;
   font-family: "Noto Sans KR", sans-serif;
+  overflow: hidden;
 `;
 
 const FilterSection = styled.div`
@@ -17,7 +21,7 @@ const FilterSection = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-top: 60px;
-  margin-bottom: 23px; // ✅ 검색창과 흰색 창 사이 간격 23px로 수정
+  margin-bottom: 26px; /* ✅ 검색창 ↔ 흰색 박스 간격 */
 `;
 
 const GroupButton = styled.button`
@@ -28,7 +32,6 @@ const GroupButton = styled.button`
   border-radius: 30px;
   font-size: 20px;
   font-weight: bold;
-  font-family: "Noto Sans KR", sans-serif;
 `;
 
 const SearchContainer = styled.div`
@@ -71,11 +74,12 @@ const PostContainer = styled.div`
   position: relative;
   background-color: white;
   width: 1152px;
-  min-height: 580px;
+  height: 580px;
   padding: 40px 56px;
-  padding-top: 146px; // 글쓰기 버튼과 첫 박스 사이 간격 포함
+  padding-top: 100px;
   border-radius: 30px;
-  margin: 20px auto 0;
+  margin: 0 auto;
+  box-sizing: border-box;
 `;
 
 const WriteButton = styled.button`
@@ -90,7 +94,6 @@ const WriteButton = styled.button`
   border-radius: 30px;
   font-size: 20px;
   font-weight: bold;
-  font-family: "Noto Sans KR", sans-serif;
   cursor: pointer;
 `;
 
@@ -99,31 +102,43 @@ const Post = styled.div`
   border-radius: 15px;
   width: 1040px;
   height: 79px;
-  margin-bottom: 28px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+
+  &:first-of-type {
+    margin-top: 56px; /* ✅ 글쓰기 버튼 ↔ 첫 회색 박스 */
+  }
+
+  & + & {
+    margin-top: 28px; /* ✅ 회색 박스끼리 간격 */
+  }
+
   .title {
     font-size: 15px;
     font-weight: 500;
     color: black;
     margin-bottom: 5px;
-    font-family: "Noto Sans KR", sans-serif;
   }
+
   .date {
     font-size: 15px;
     font-weight: 400;
     color: black;
-    font-family: "Noto Sans KR", sans-serif;
   }
 `;
 
 const Board = () => {
   const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
   const clearInput = () => setKeyword("");
+
+  const handleWriteClick = () => {
+    navigate("/board/upload"); // ✅ BoardUpload로 이동
+  };
 
   return (
     <Wrapper>
@@ -141,7 +156,7 @@ const Board = () => {
       </FilterSection>
 
       <PostContainer>
-        <WriteButton>글쓰기</WriteButton>
+        <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
 
         <Post>
           <div className="title">아 나 마니또 누군지 알 것 같은데?[3]</div>
