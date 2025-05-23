@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import MemberMatchInfo from "../components/ManageDetail/MemberMatchInfo";
-import Button from "../components/ManageDetail/Button";
+import Button from "../components/Button";
 import groupImage from "../assets/group.png";
 
 const ManageDetailContainer = styled.div`
@@ -34,10 +34,10 @@ const GroupDetailContainer = styled.div`
 `;
 
 const GroupContainer = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 25px;
 `;
 
 const GroupImage = styled.img`
@@ -84,17 +84,19 @@ const ButtonContainer = styled.div`
   gap: 40px;
 `;
 
-function ManageDetail() {
+export default function ManageDetail({
+
+}) {
   const [isMatch, setIsMatch] = useState(false);
-  const [isPublic, setIsPublic] = useState(false);
+  const [isReveal, setIsReveal] = useState(false);
 
   const handleMatch = () => {
     setIsMatch(true);
-    setIsPublic(false);
+    setIsReveal(false);
   };
   
   const handlePublic = () => {
-    setIsPublic(true);
+    setIsReveal(true);
   };
 
   return (
@@ -109,11 +111,11 @@ function ManageDetail() {
           </GroupInfoContainer>
         </GroupContainer>
         <MemberMatchInfoContainer>
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isPublic={isPublic} matchName="마니또" />
+          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
+          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
+          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
+          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
+          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
         </MemberMatchInfoContainer>
       </GroupDetailContainer>
       <ButtonContainer>
@@ -124,5 +126,3 @@ function ManageDetail() {
     </ManageDetailContainer>
   );
 }
-
-export default ManageDetail;
