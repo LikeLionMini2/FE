@@ -20,6 +20,7 @@ import ManageDetail from "./pages/ManageDetail";
 import ManiMall from "./pages/ManiMall";
 import Mypage from "./pages/Mypage";
 import MypageUpload from "./pages/MypageUpload";
+import MyInfo from "./pages/MyInfo";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/mypage/attendance" element={<Attendance />} />
           <Route path="/mypage/upload" element={<MypageUpload />} />
           <Route path="/mypage/manimall" element={<ManiMall />} />
+          <Route path="/mypage/myinfo" element={<MyInfo />} />
 
           {/* 관리자페이지 */}
           <Route path="/manage" element={<Manage />} />

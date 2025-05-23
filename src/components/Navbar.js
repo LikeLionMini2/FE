@@ -130,7 +130,7 @@ const NavBar = () => {
         <NavLinks>
           <NavLink to="/group">Group</NavLink>
           <NavLink to="/manage">Manage</NavLink>
-          <NavLink to="/mypage">Mypage</NavLink>
+          <NavLink to="/mypage/myinfo">Mypage</NavLink>
         </NavLinks>
 
         <DropdownWrapper ref={dropdownRef}>
