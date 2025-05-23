@@ -25,12 +25,8 @@ const GroupContainer = styled.div`
 `;
 
 const Title = styled.div`
-  font-family: "Damion", cursive;
-  font-weight: 500;
   font-size: 48px;
   line-height: 100px;
-  text-align: left;
-  color: #000000;
 `;
 
 const MyGroupContainer = styled.div`
@@ -103,7 +99,7 @@ export default function Group() {
 
   return (
     <GroupContainer>
-      <Title>My Groups</Title>
+      <Title className="damion">My Groups</Title>
       <MyGroupContainer>
         <MyGroupLeftContainer>
         <MyGroup name={"마니또"} />
@@ -121,13 +117,13 @@ export default function Group() {
           <Button buttonText="그룹 생성" onClick={handleGroupMake} />
         </MyGroupRightContainer>
       </MyGroupContainer>
-      <Title>All Groups</Title>
+      <Title className="damion">All Groups</Title>
       <AllGroupContainer>
-        <AllGroup name={"마니또"} description={"테스트"} createdAt={"2025-05-23T19:20:43.861222"} />
-        <AllGroup name={"마니또"} description={"테스트"} createdAt={"2025-05-23T19:20:43.861222"} />
-        <AllGroup name={"마니또"} description={"테스트"} createdAt={"2025-05-23T19:20:43.861222"} />
-        <AllGroup name={"마니또"} description={"테스트"} createdAt={"2025-05-23T19:20:43.861222"} />
-        <AllGroup name={"마니또"} description={"테스트"} createdAt={"2025-05-23T19:20:43.861222"} />
+        <AllGroup name={"마니또1"} description={"테스트1"} createdAt={"2025-05-23T19:20:43.861222"} />
+        <AllGroup name={"마니또2"} description={"테스트2"} createdAt={"2025-05-23T19:20:43.861222"} />
+        <AllGroup name={"마니또3"} description={"테스트3"} createdAt={"2025-05-23T19:20:43.861222"} />
+        <AllGroup name={"마니또4"} description={"테스트4"} createdAt={"2025-05-23T19:20:43.861222"} />
+        <AllGroup name={"마니또5"} description={"테스트5"} createdAt={"2025-05-23T19:20:43.861222"} />
         {/* {allGroups.map((group) => (
           <AllGroup key={group.groupId} name={group.groupName} description={group.description} createdAt={group.createdAt} />
         ))} */}
