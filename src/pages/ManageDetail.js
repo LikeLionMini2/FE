@@ -95,7 +95,7 @@ export default function ManageDetail({
     setIsReveal(false);
   };
   
-  const handlePublic = () => {
+  const handleReveal = () => {
     setIsReveal(true);
   };
 
@@ -120,7 +120,7 @@ export default function ManageDetail({
       </GroupDetailContainer>
       <ButtonContainer>
         <Button buttonText="마니또 매칭" onClick={handleMatch} />
-        <Button buttonText="마니또 공개" onClick={handlePublic} />
+        <Button buttonText="마니또 공개" onClick={handleReveal} />
         <Button backgroundColor="#E06A34" buttonText="그룹 삭제" />
       </ButtonContainer>
     </ManageDetailContainer>

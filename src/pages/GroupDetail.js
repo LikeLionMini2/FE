@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import groupImage from "../assets/group.png";
 
 const GroupDetailContainer = styled.div`
@@ -45,7 +45,7 @@ const GroupName = styled.div`
   font-size: 30px;
 `;
 
-const GroupMemberCount = styled.div`
+const GroupCreatedAt = styled.div`
   font-weight: bold;
   font-size: 25px;
   color: #5C5752;
@@ -79,15 +79,19 @@ const GroupJoinButtonText = styled(Link)`
 `;
 
 function GroupDetail() {
+  const location = useLocation();
+  const { name, description, formattedDate } = location.state;
+
   return (
   <GroupDetailContainer>
     <GroupCardContainer>
       <GroupImage src={groupImage} />
       <GroupInfoContainer>
-        <GroupName>마니또</GroupName>
-        <GroupMemberCount>10/20</GroupMemberCount>
+        <GroupName>{name}</GroupName>
+        <GroupCreatedAt>{formattedDate}</GroupCreatedAt>
         <GroupDescription>
-          {"그룹에 대한 설명\n어쩌구 저쩌구\n다 보이도록"}
+          {/* {"그룹에 대한 설명\n어쩌구 저쩌구\n다 보이도록"} */}
+          {description}
         </GroupDescription>
       </GroupInfoContainer>
     </GroupCardContainer>

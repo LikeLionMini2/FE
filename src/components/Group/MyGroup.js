@@ -25,8 +25,7 @@ const GroupName = styled(Link)`
     }
 `;
 
-function MyGroup(props) {
-    const { name } = props;
+export default function MyGroup({ key, name }) {
 
     return (
         <MyGroupContainer>
@@ -35,5 +34,3 @@ function MyGroup(props) {
         </MyGroupContainer>
     );
 }
-
-export default MyGroup;

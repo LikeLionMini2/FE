@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 import masked from "../../assets/masked.png";
 import hidden from "../../assets/hidden.png";
 
-const MemberMatchInfoContainer = styled.div`
+const MemberMatchInfoContainer = styled(Link)`
     width: 840px;
     height: 80px;
     border-radius: 50px;
@@ -34,13 +35,13 @@ const Name = styled.span`
 
 
 function MemberMatchInfo(props) {
-    const { name, isMatch, isPublic, matchName } = props;
+    const { name, isMatch, isReveal, matchName } = props;
 
     let matchMember;
 
     if(!isMatch) {
         matchMember = <Name color="#5C5752">아직 매칭되지 않았습니다</Name>;
-    } else if(isMatch && !isPublic) {
+    } else if(isMatch && !isReveal) {
         matchMember =(
             <>
                 <Name>???</Name>
@@ -57,7 +58,7 @@ function MemberMatchInfo(props) {
     }
 
     return (
-        <MemberMatchInfoContainer>
+        <MemberMatchInfoContainer to='/mypage'>
             <MemberContainer>
                 <Image src={masked} />
                 <Name>{name}</Name>

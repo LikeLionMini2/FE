@@ -12,7 +12,6 @@ const ButtonWrapper = styled.div`
 `;
 
 const ButtonText = styled.span`
-  font-family: "Noto Sans KR", sans-serif;
   font-weight: 500;
   font-size: 25px;
   color: #ffffff;
