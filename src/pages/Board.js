@@ -7,21 +7,21 @@ import { IoMdClose } from "react-icons/io";
 const Wrapper = styled.div`
   background-color: #d8cdb9;
   width: 100%;
-  height: 832px;
-  padding: 40px 60px;
+  min-height: 100vh;
+  padding: 60px 60px 42px 60px; /* 상단/하단 여백 포함 */
   box-sizing: border-box;
   font-family: "Noto Sans KR", sans-serif;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const FilterSection = styled.div`
   width: 1152px;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 60px;
-  margin-bottom: 26px; /* ✅ 검색창 ↔ 흰색 박스 간격 */
+  margin-bottom: 26px;
 `;
 
 const GroupButton = styled.button`
@@ -74,11 +74,9 @@ const PostContainer = styled.div`
   position: relative;
   background-color: white;
   width: 1152px;
-  height: 580px;
-  padding: 40px 56px;
+  padding: 40px 56px 60px 56px;
   padding-top: 100px;
   border-radius: 30px;
-  margin: 0 auto;
   box-sizing: border-box;
 `;
 
@@ -97,6 +95,13 @@ const WriteButton = styled.button`
   cursor: pointer;
 `;
 
+const PostList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 28px; /* ✅ 회색 칸 간격 */
+  margin-top: 56px; /* ✅ 글쓰기 버튼과 첫 칸 간격 */
+`;
+
 const Post = styled.div`
   background-color: #e0dfdd;
   border-radius: 15px;
@@ -107,14 +112,6 @@ const Post = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
-
-  &:first-of-type {
-    margin-top: 56px; /* ✅ 글쓰기 버튼 ↔ 첫 회색 박스 */
-  }
-
-  & + & {
-    margin-top: 28px; /* ✅ 회색 박스끼리 간격 */
-  }
 
   .title {
     font-size: 15px;
@@ -135,10 +132,27 @@ const Board = () => {
   const navigate = useNavigate();
 
   const clearInput = () => setKeyword("");
-
   const handleWriteClick = () => {
-    navigate("/board/upload"); // ✅ BoardUpload로 이동
+    navigate("/board/upload");
   };
+
+  const posts = [
+    { title: "졸려운데 잠은 안 오고 같이 얘기할 사람[1]", date: "2025.04.18" },
+    {
+      title: "마니또라고 생각되는 사람이랑 같이 밥 먹다가....![1]",
+      date: "2025.04.18",
+    },
+    {
+      title: "새벽되니까 출출한데 야식 추천해 줄 사람 ㅋㅋㅋㅋ[3]",
+      date: "2025.04.19",
+    },
+    {
+      title: "아 나 마니또 누군지 알 것 같은데?[3]",
+      date: "2025.04.21",
+    },
+  ];
+
+  const sortedPosts = [...posts].reverse();
 
   return (
     <Wrapper>
@@ -158,26 +172,14 @@ const Board = () => {
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
 
-        <Post>
-          <div className="title">아 나 마니또 누군지 알 것 같은데?[3]</div>
-          <div className="date">2025.04.21</div>
-        </Post>
-        <Post>
-          <div className="title">
-            새벽되니까 출출한데 야식 추천해 줄 사람 ㅋㅋㅋㅋ[3]
-          </div>
-          <div className="date">2025.04.19</div>
-        </Post>
-        <Post>
-          <div className="title">
-            마니또라고 생각되는 사람이랑 같이 밥 먹다가....![1]
-          </div>
-          <div className="date">2025.04.18</div>
-        </Post>
-        <Post>
-          <div className="title">졸려운데 잠은 안 오고 같이 얘기할 사람[1]</div>
-          <div className="date">2025.04.18</div>
-        </Post>
+        <PostList>
+          {sortedPosts.map((post, index) => (
+            <Post key={index}>
+              <div className="title">{post.title}</div>
+              <div className="date">{post.date}</div>
+            </Post>
+          ))}
+        </PostList>
       </PostContainer>
     </Wrapper>
   );
