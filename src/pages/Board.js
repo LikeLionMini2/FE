@@ -4,24 +4,31 @@ import styled from "styled-components";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
-const Wrapper = styled.div`
+const Container = styled.div`
+  position: relative;
+  width: 1280px;
+  height: 720px;
   background-color: #d8cdb9;
-  width: 100%;
-  height: 832px;
-  padding: 40px 60px;
-  box-sizing: border-box;
   font-family: "Noto Sans KR", sans-serif;
-  overflow: hidden;
+
+  padding-top: 50px;        /* 네브바 아래 여백 */
+  padding-left: 64px;
+  padding-right: 64px;
+  padding-bottom: 40px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const FilterSection = styled.div`
-  width: 1152px;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 60px;
-  margin-bottom: 26px; /* ✅ 검색창 ↔ 흰색 박스 간격 */
+  padding-bottom: 42px;  /* 검색창 ↔ 흰 박스 간격 */
 `;
 
 const GroupButton = styled.button`
@@ -64,6 +71,7 @@ const SearchInput = styled.input`
   background: none;
   text-align: center;
   height: 100%;
+
   &::placeholder {
     color: #000;
     font-weight: 400;
@@ -73,12 +81,10 @@ const SearchInput = styled.input`
 const PostContainer = styled.div`
   position: relative;
   background-color: white;
-  width: 1152px;
+  width: 100%;
   height: 580px;
-  padding: 40px 56px;
-  padding-top: 100px;
+  padding: 100px 56px 40px 56px; /* 위: 글쓰기 버튼 공간 */
   border-radius: 30px;
-  margin: 0 auto;
   box-sizing: border-box;
 `;
 
@@ -100,7 +106,7 @@ const WriteButton = styled.button`
 const Post = styled.div`
   background-color: #e0dfdd;
   border-radius: 15px;
-  width: 1040px;
+  width: 100%;
   height: 79px;
   display: flex;
   flex-direction: column;
@@ -109,11 +115,11 @@ const Post = styled.div`
   text-align: center;
 
   &:first-of-type {
-    margin-top: 56px; /* ✅ 글쓰기 버튼 ↔ 첫 회색 박스 */
+    margin-top: 56px;
   }
 
   & + & {
-    margin-top: 28px; /* ✅ 회색 박스끼리 간격 */
+    margin-top: 28px;
   }
 
   .title {
@@ -137,11 +143,11 @@ const Board = () => {
   const clearInput = () => setKeyword("");
 
   const handleWriteClick = () => {
-    navigate("/board/upload"); // ✅ BoardUpload로 이동
+    navigate("/board/upload");
   };
 
   return (
-    <Wrapper>
+    <Container>
       <FilterSection>
         <GroupButton>그룹명</GroupButton>
         <SearchContainer>
@@ -179,7 +185,7 @@ const Board = () => {
           <div className="date">2025.04.18</div>
         </Post>
       </PostContainer>
-    </Wrapper>
+    </Container>
   );
 };
 

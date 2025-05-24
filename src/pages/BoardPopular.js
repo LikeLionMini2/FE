@@ -5,26 +5,20 @@ import fav from "../assets/fav.png";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
-// const Container = styled.div`
-//   background-color: #d8cdb9;
-//   min-height: 100vh;
-//   padding: 20px 40px;
-//   font-family: 'Noto Sans KR', sans-serif;
-// `;
-
 const Container = styled.div`
   position: relative;
   width: 1280px;
   height: 720px;
   background: #d8cdb9;
-  overflow: hidden;
-  /* padding: 20px 40px; */
+  padding: 36px 40px 116px 40px; /* top, sides, bottom 간격 통일 */
+  font-family: "Noto Sans KR", sans-serif;
+  box-sizing: border-box;
 `;
 
 const SearchBox = styled.div`
-  margin: 36px auto 30px;
   display: flex;
   justify-content: center;
+  padding-bottom: 30px;
 `;
 
 const SearchContainer = styled.div`
@@ -71,12 +65,12 @@ const PostGrid = styled.div`
   display: flex;
   justify-content: center;
   gap: 82px;
-  max-width: 1120px;
-  margin: 0 auto;
+  width: 100%;
+  padding-bottom: 44px; /* 기존 margin-top: 44px에서 padding으로 대체 */
 `;
 
 const PostCardWrapper = styled.div`
-  margin-top: ${(props) => props.top || "0px"};
+  padding-top: ${(props) => props.top || "0px"};
 `;
 
 const PostCard = styled.div`
@@ -96,10 +90,9 @@ const EmptySection = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 44px;
-  margin-bottom: 116px;
   gap: 85px;
   flex-direction: row;
+  padding-top: 44px; /* 기존 margin-top */
 `;
 
 const EmptyImage = styled.img`
@@ -146,18 +139,12 @@ export default function BoardPopular() {
 
       <PostGrid>
         <PostCardWrapper top="0px">
-          {" "}
-          {/* Top1 */}
           <PostCard>인기글 TOP1</PostCard>
         </PostCardWrapper>
         <PostCardWrapper top="6px">
-          {" "}
-          {/* Top2 */}
           <PostCard>인기글 TOP2</PostCard>
         </PostCardWrapper>
         <PostCardWrapper top="12px">
-          {" "}
-          {/* Top3 */}
           <PostCard>인기글 TOP3</PostCard>
         </PostCardWrapper>
       </PostGrid>

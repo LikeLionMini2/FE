@@ -5,11 +5,12 @@ import styled from 'styled-components';
 // ✅ 전체 배경 컨테이너
 const OuterContainer = styled.div`
   background-color: #D8CDB9;
-  height: 100vh;
+  height: 720px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: 28px; /* ✅ 버튼 위 간격을 여기서 확보 */
   font-family: 'Noto Sans KR', sans-serif;
 `;
 
@@ -40,16 +41,16 @@ const Label = styled.label`
   font-size: 24px;
   font-weight: 700;
   width: 130px;
-  margin-right: 25px;
+  padding-right: 25px;
   white-space: nowrap;
 `;
 
 const TitleLabel = styled(Label)`
-  margin-top: 22px;
+  padding-top: 22px; /* ✅ margin → padding */
 `;
 
 const ContentLabel = styled(Label)`
-  margin-top: 4px;
+  padding-top: 4px; /* ✅ margin → padding */
 `;
 
 const TitleInput = styled.input`
@@ -78,7 +79,7 @@ const ButtonWrapper = styled.div`
   width: 1152px;
   display: flex;
   justify-content: flex-end;
-  margin-top: 28px;
+  padding-top: 28px; /* ✅ margin → padding */
 `;
 
 const Button = styled.button`
@@ -97,7 +98,7 @@ function BoardUpload() {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate('/Board'); // 원하는 페이지로 이동
+    navigate('/Board');
   };
 
   return (
@@ -123,3 +124,4 @@ function BoardUpload() {
 }
 
 export default BoardUpload;
+
