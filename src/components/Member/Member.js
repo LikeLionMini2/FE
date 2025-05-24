@@ -29,7 +29,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   margin-left: 45px;
-  margin-top: 25px;
+  margin-top: 20px;
 `;
 
 const Label = styled.div`
@@ -37,12 +37,12 @@ const Label = styled.div`
   font-size: 26px;
   font-weight: 700;
   color: white;
-  padding: 10px 0px 10px 0px;
-  width: 100px;
+  padding: 10px 0px 10px 10px;
+  width: 130px;
 `;
 
 const Input = styled.input`
-  width: 430px;
+  width: 370px;
   height: 50px;
   background-color: rgba(255, 255, 255, 0.19);
   border: none;

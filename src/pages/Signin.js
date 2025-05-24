@@ -1,26 +1,80 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import InputFieldMem from "../components/Member/Member";
+import EmailCheck from "../components/Member/EmailCheck";
 import fav from "../assets/fav.png";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function Signin({
-  nameValue,
-  onNameChange,
-  idValue,
-  onIdChange,
-  mailValue,
-  onMailChange,
-  pwValue,
-  onPwChange,
-  pwcheckValue,
-  onPwCheckChange,
-}) {
+function Signin() {
   const navigate = useNavigate();
 
+  // 유효성 검사 함수
+  const validateInputs = () => {
+    let valid = true;
+
+    if (useridinput.length < 1 || useridinput.length > 4) {
+      setNicknameMessage("닉네임은 1자 이상 4자 이하로 입력해주세요.");
+      valid = false;
+    } else {
+      setNicknameMessage("");
+    }
+
+    if (!emailinput.includes("@")) {
+      setEmailMessage("올바른 이메일 형식을 입력해주세요.");
+      valid = false;
+    } else {
+      setEmailMessage("");
+    }
+
+    if (passwordinput.length < 8) {
+      setPasswordMessage("비밀번호는 최소 8자 이상이어야 합니다.");
+      valid = false;
+    } else if (passwordinput !== passwordCheckInput) {
+      setPasswordMessage("비밀번호가 일치하지 않습니다.");
+      valid = false;
+    } else {
+      setPasswordMessage("");
+    }
+
+    return valid;
+  };
+
   const handleSignupClick = () => {
-    alert("회원가입 성공");
-    navigate("/login");
+    if (!validateInputs()) {
+      return;
+    }
+    registeraxios();
+  };
+
+  const [useridinput, setUseridinput] = useState("");
+  const [emailinput, setEmailinput] = useState("");
+  const [passwordinput, setPasswordinput] = useState("");
+  const [passwordCheckInput, setPasswordCheckInput] = useState("");
+  const [message, setMessage] = useState("");
+  const [nicknameMessage, setNicknameMessage] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
+
+  const registeraxios = () => {
+    console.log("회원가입 요청 시작");
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/api/v1/signup`, {
+        email: emailinput,
+        password: passwordinput,
+        nickname: useridinput,
+      })
+      .then((response) => {
+        console.log(response);
+        alert("회원가입 성공");
+        if (response.status === 200) {
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        setMessage(err.response?.data?.message);
+        console.log(err);
+      });
   };
 
   return (
@@ -29,43 +83,49 @@ function Signin({
         <BoxContainer>
           <Title>회원가입</Title>
           <InputFieldMem
-            label="이름"
-            id="user-name"
-            value={nameValue}
-            onChange={onNameChange}
-            placeholder="이름을 작성해주세요."
-          />
-          <InputFieldMem
-            label="아이디"
+            label="닉네임"
             id="user-id"
-            value={idValue}
-            onChange={onIdChange}
-            placeholder="아이디를 작성해주세요."
+            value={useridinput}
+            onChange={(e) => {
+              setUseridinput(e.target.value);
+            }}
+            placeholder="닉네임을 작성해주세요."
+            minLength={1}
+            maxLength={4}
           />
-          <InputFieldMem
+          <FailTo>{nicknameMessage || " "}</FailTo>
+
+          <EmailCheck
             label="이메일"
             id="user-mail"
             type="email"
-            value={mailValue}
-            onChange={onMailChange}
+            value={emailinput}
+            onChange={(e) => {
+              setEmailinput(e.target.value);
+            }}
             placeholder="이메일을 작성해주세요."
           />
+          <FailTo>{emailMessage || " "}</FailTo>
           <InputFieldMem
             label="비밀번호"
             id="user-password"
             type="password"
-            value={pwValue}
-            onChange={onPwChange}
+            value={passwordinput}
+            onChange={(e) => {
+              setPasswordinput(e.target.value);
+            }}
             placeholder="비밀번호를 작성해주세요."
+            minLength={8}
           />
           <InputFieldMem
             id="user-password-check"
             type="password"
-            value={pwcheckValue}
-            onChange={onPwCheckChange}
+            value={passwordCheckInput}
+            onChange={(e) => setPasswordCheckInput(e.target.value)}
             placeholder="비밀번호를 다시 작성해주세요."
+            minLength={8}
           />
-          <FailTo>비밀번호가 틀렸습니다.</FailTo>
+          <FailTo>{passwordMessage || " "}</FailTo>
           <SigninButton onClick={handleSignupClick}>회원가입</SigninButton>
         </BoxContainer>
         <Image />
@@ -111,15 +171,18 @@ const FailTo = styled.div`
   font-size: 14px;
   font-family: "Noto Sans KR", sans-serif;
   font-weight: 300;
-  margin-left: 170px;
-  margin-top: 8px;
+  margin-left: 190px;
+  /* margin-top: 8px; */
   color: white;
+  min-height: 20px; /* 메시지 유무에 상관없이 공간 확보 */
+  display: flex;
+  align-items: center;
 `;
 
 const SigninButton = styled.button`
   width: 166px;
   height: 49px;
-  margin-top: 19.43px;
+  margin-top: 50px;
   margin-left: 400px;
   background: #ffffff;
   border-radius: 50px;

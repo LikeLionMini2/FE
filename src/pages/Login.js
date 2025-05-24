@@ -1,19 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import InputField from "../components/Login/InputField";
 import fav from "../assets/fav.png";
 import { useNavigate } from "react-router-dom";
 
-function Login({ idValue, onIdChange, pwValue, onPwChange }) {
+function Login() {
   const navigate = useNavigate();
+  const [message, setMessage] = useState("");
+  const [emailinput, setEmailinput] = useState("");
+  const [passwordinput, setPasswordinput] = useState("");
 
   const handleSignupClick = () => {
     navigate("/signup"); // 회원가입 페이지로
   };
 
-  const handleLoginClick = () => {
-    alert("로그인 성공~");
-    navigate("/group"); // 그룹 페이지로
+  const handleLoginClick = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/v1/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: emailinput,
+            password: passwordinput,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        alert("로그인 실패: 이메일 또는 비밀번호를 확인하세요.");
+        console.log("입력 이메일:", emailinput);
+        console.log("입력 비밀번호:", passwordinput);
+        return;
+      }
+
+      const data = await response.json();
+      console.log("서버 응답:", data);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        alert("로그인 성공~");
+        navigate("/group");
+        console.log("입력 이메일:", emailinput);
+        console.log("입력 비밀번호:", passwordinput);
+      } else {
+        alert("로그인 실패: 토큰이 없습니다.");
+      }
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      alert("로그인 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -22,21 +61,26 @@ function Login({ idValue, onIdChange, pwValue, onPwChange }) {
         <BoxContainer>
           <Title>로그인</Title>
           <InputField
-            label="ID"
-            id="user-id"
-            vaule={idValue}
-            onChange={onIdChange}
-            placeholder="아이디를 작성해주세요."
+            label="이메일"
+            id="user-email"
+            value={emailinput}
+            onChange={(e) => {
+              setEmailinput(e.target.value);
+            }}
+            placeholder="이메일을 작성해주세요."
           />
           <InputField
-            label="PW"
+            label="비밀번호"
             id="user-password"
             type="password"
-            vaule={pwValue}
-            onChange={onPwChange}
+            value={passwordinput}
+            onChange={(e) => {
+              setPasswordinput(e.target.value);
+            }}
             placeholder="비밀번호를 작성해주세요."
           />
-          <FailTo>비밀번호가 틀렸습니다.</FailTo>
+          {message && <FailTo>{message}</FailTo>}
+
           <LoginButton onClick={handleLoginClick}>로그인</LoginButton>
           <TextContainer>
             <NormalText>회원이 아니신가요?</NormalText>
