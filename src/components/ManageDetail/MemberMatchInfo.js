@@ -26,21 +26,17 @@ const Image = styled.img`
 `;
 
 const Name = styled.span`
-    font-family: "Noto Sans KR", sans-serif;
     font-weight: bold;
     font-size: 20px;
     color: ${(props) => props.color || "#000"}
 `;
 
-
-function MemberMatchInfo(props) {
-    const { name, isMatch, isPublic, matchName } = props;
-
+export default function MemberMatchInfo({ name, isMatch, isReveal, matchName }) {
     let matchMember;
 
     if(!isMatch) {
         matchMember = <Name color="#5C5752">아직 매칭되지 않았습니다</Name>;
-    } else if(isMatch && !isPublic) {
+    } else if(isMatch && !isReveal) {
         matchMember =(
             <>
                 <Name>???</Name>
@@ -68,5 +64,3 @@ function MemberMatchInfo(props) {
         </MemberMatchInfoContainer>
     );
 }
-
-export default MemberMatchInfo;

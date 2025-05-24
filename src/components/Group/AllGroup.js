@@ -20,7 +20,6 @@ const GroupImage = styled.img`
 `;
 
 const GroupInfoContainer = styled.div`
-  font-family: "Noto Sans KR", sans-serif;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -36,24 +35,29 @@ const GroupName = styled.div`
   font-size: 30px;
 `;
 
-const GroupMemberCount = styled.div`
+const GroupCreatedAt = styled.div`
   font-weight: bold;
-  font-size: 25px;
+  font-size: 20px;
   color: #5c5752;
 `;
 
-function AllGroup(props) {
-  const { name, memberCount } = props;
+export default function AllGroup({ id, name, description, createdAt }) {
+  const date = new Date(createdAt);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const formattedDate = `${year}/${month}/${day}`;
 
   return (
-    <AllGroupContainer to="/group/detail">
+    <AllGroupContainer
+      to={{ pathname: "/group/detail", }}
+      state={{ id, name, description, createdAt: formattedDate }}
+    >
       <GroupImage src={groupImage} />
       <GroupInfoContainer>
         <GroupName>{name}</GroupName>
-        <GroupMemberCount>{memberCount}/20</GroupMemberCount>
+        <GroupCreatedAt>{formattedDate}</GroupCreatedAt>
       </GroupInfoContainer>
     </AllGroupContainer>
   );
 }
-
-export default AllGroup;
