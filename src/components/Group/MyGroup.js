@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import groupImage from "../../assets/masked.png";
 
 const MyGroupContainer = styled.div`
-    font-family: "Noto Sans KR", sans-serif;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -25,9 +24,7 @@ const GroupName = styled(Link)`
     }
 `;
 
-function MyGroup(props) {
-    const { name } = props;
-
+export default function MyGroup({ id, name }) {
     return (
         <MyGroupContainer>
             <GroupImage src={groupImage} />
@@ -35,5 +32,3 @@ function MyGroup(props) {
         </MyGroupContainer>
     );
 }
-
-export default MyGroup;

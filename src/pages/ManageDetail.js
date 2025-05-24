@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 import MemberMatchInfo from "../components/ManageDetail/MemberMatchInfo";
 import Button from "../components/Button";
 import groupImage from "../assets/group.png";
@@ -7,23 +8,22 @@ import groupImage from "../assets/group.png";
 const ManageDetailContainer = styled.div`
   width: 1280px;
   height: 720px;
-  margin-top: 60px;
-  overflow: hidden;
-  overflow-y: auto;
+  padding: 50px 60px 10px;
   display: flex;
-  flex-direction: row;
   align-items: flex-start;
   justify-content: center;
   gap: 55px;
 
+  overflow: hidden;
+  overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 `;
 
 const GroupDetailContainer = styled.div`
   width: 920px;
-  overflow: hidden;
   padding: 40px;
+  overflow: hidden;
   border-radius: 20px;
   background: #FFF;
   display: flex;
@@ -45,7 +45,6 @@ const GroupImage = styled.img`
 `;
 
 const GroupInfoContainer = styled.div`
-  font-family: "Noto Sans KR", sans-serif;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -57,7 +56,7 @@ const GroupName = styled.div`
   font-size: 30px;
 `;
 
-const GroupMemberCount = styled.div`
+const GroupCcreatedAt = styled.div`
   font-weight: bold;
   font-size: 25px;
   color: #5C5752;
@@ -84,18 +83,26 @@ const ButtonContainer = styled.div`
   gap: 40px;
 `;
 
-export default function ManageDetail({
+export default function ManageDetail({}) {
+  const location = useLocation();
+  const { id, name, description, createdAt } = location.state;
 
-}) {
   const [isMatch, setIsMatch] = useState(false);
   const [isReveal, setIsReveal] = useState(false);
+
+  const members = [];
+
+  // 테스트용 멤버 생성
+  for (let i = 1; i <= 5; i++) {
+    members.push({ id: i, name: `마니또${i}`, matchName: `테스트${i}` });
+  }
 
   const handleMatch = () => {
     setIsMatch(true);
     setIsReveal(false);
   };
   
-  const handlePublic = () => {
+  const handleReveal = () => {
     setIsReveal(true);
   };
 
@@ -105,22 +112,20 @@ export default function ManageDetail({
         <GroupContainer>
           <GroupImage src={groupImage} />
           <GroupInfoContainer>
-            <GroupName>마니또</GroupName>
-            <GroupMemberCount>10/20</GroupMemberCount>
-            <GroupDescription>그룹에 대한 설명 어쩌구 저쩌구 다 보이도록</GroupDescription>
+            <GroupName>{name}</GroupName>
+            <GroupCcreatedAt>{createdAt}</GroupCcreatedAt>
+            <GroupDescription>{description}</GroupDescription>
           </GroupInfoContainer>
         </GroupContainer>
         <MemberMatchInfoContainer>
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
-          <MemberMatchInfo name="마니또" isMatch={isMatch} isReveal={isReveal} matchName="마니또" />
+          {members.map((member) => (
+            <MemberMatchInfo key={member.id} id={member.id} name={member.name} isMatch={isMatch} isReveal={isReveal} matchName={member.matchName} />
+          ))}
         </MemberMatchInfoContainer>
       </GroupDetailContainer>
       <ButtonContainer>
         <Button buttonText="마니또 매칭" onClick={handleMatch} />
-        <Button buttonText="마니또 공개" onClick={handlePublic} />
+        <Button buttonText="마니또 공개" onClick={handleReveal} />
         <Button backgroundColor="#E06A34" buttonText="그룹 삭제" />
       </ButtonContainer>
     </ManageDetailContainer>
