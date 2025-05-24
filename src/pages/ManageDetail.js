@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import MemberMatchInfo from "../components/ManageDetail/MemberMatchInfo";
 import Button from "../components/Button";
 import groupImage from "../assets/group.png";
@@ -84,6 +85,7 @@ const ButtonContainer = styled.div`
 `;
 
 export default function ManageDetail() {
+  const navigate = useNavigate();
   const location = useLocation();
   const { id, name, description, createdAt } = location.state;
 
@@ -104,6 +106,40 @@ export default function ManageDetail() {
   
   const handleReveal = () => {
     setIsReveal(true);
+  };
+
+  const handleGroupDelete = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      console.log("그룹 삭제 시작");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const confirmDelete = window.confirm("정말로 이 그룹을 삭제하시겠습니까?");
+      if (!confirmDelete) return;
+      
+      const res = await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/v1/groups/${id}`,
+        config
+      );
+
+      alert("그룹이 성공적으로 삭제되었습니다.");
+      navigate("/manage");
+    } catch (err) {
+      console.error("그룹 삭제 실패:", err);
+      alert("그룹 삭제에 실패했습니다.");
+    }
   };
 
   return (
@@ -129,7 +165,7 @@ export default function ManageDetail() {
       <ButtonContainer>
         <Button buttonText="마니또 매칭" onClick={handleMatch} />
         <Button buttonText="마니또 공개" onClick={handleReveal} />
-        <Button backgroundColor="#E06A34" buttonText="그룹 삭제" />
+        <Button backgroundColor="#E06A34" buttonText="그룹 삭제" onClick={handleGroupDelete} />
       </ButtonContainer>
     </ManageDetailContainer>
   );

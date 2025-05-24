@@ -64,8 +64,6 @@ export default function Manage() {
             config
           );
           setManageGroups(res.data);
-
-          console.log(res.data);
         } catch (err) {
           console.error("그룹 조회 오류:", err);
           alert("그룹 정보를 불러오는 데 실패했습니다.");
