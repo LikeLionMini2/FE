@@ -9,10 +9,10 @@ const ButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 `;
 
 const ButtonText = styled.span`
-  font-family: "Noto Sans KR", sans-serif;
   font-weight: 500;
   font-size: 25px;
   color: #ffffff;
@@ -22,14 +22,10 @@ const ButtonText = styled.span`
   }
 `;
 
-function Button(props) {
-    const { backgroundColor, buttonText, onClick } = props;
-
+export default function Button({ backgroundColor, buttonText, buttonTextFont, onClick }) {
     return (
         <ButtonWrapper backgroundColor={backgroundColor} onClick={onClick}>
-            <ButtonText>{buttonText}</ButtonText>
+            <ButtonText className={buttonTextFont}>{buttonText}</ButtonText>
         </ButtonWrapper>
     );
 }
-
-export default Button;
