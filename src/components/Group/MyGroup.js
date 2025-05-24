@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import groupImage from "../../assets/masked.png";
 
 const MyGroupContainer = styled.div`
-    font-family: "Noto Sans KR", sans-serif;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -12,12 +11,14 @@ const MyGroupContainer = styled.div`
 `;
 
 const GroupImage = styled.img`
+    width: 100px;
     height: 100px;
 `;
 
 const GroupName = styled(Link)`
     font-weight: bold;
     font-size: 30px;
+    line-height: 40px;
     color: #000000;
 
     &:hover {
@@ -25,15 +26,11 @@ const GroupName = styled(Link)`
     }
 `;
 
-function MyGroup(props) {
-    const { name } = props;
-
+export default function MyGroup({ id, name }) {
     return (
         <MyGroupContainer>
             <GroupImage src={groupImage} />
-            <GroupName to="/board">{name}</GroupName>
+            <GroupName to="/board" state={{ id }}>{name}</GroupName>
         </MyGroupContainer>
     );
 }
-
-export default MyGroup;

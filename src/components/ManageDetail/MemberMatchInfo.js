@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import masked from "../../assets/masked.png";
 import hidden from "../../assets/hidden.png";
 
@@ -26,21 +27,34 @@ const Image = styled.img`
 `;
 
 const Name = styled.span`
-    font-family: "Noto Sans KR", sans-serif;
     font-weight: bold;
     font-size: 20px;
-    color: ${(props) => props.color || "#000"}
+    color: ${(props) => props.color || "#000"};
+    cursor: pointer;
+
+    ${(props) =>
+      props.hover &&
+      `
+        &:hover {
+            color: rgba(48, 48, 48, 0.5);
+        }
+    `}
 `;
 
+export default function MemberMatchInfo({ id, name, isMatch, isReveal, matchId, matchName }) {
+    const navigate = useNavigate();
 
-function MemberMatchInfo(props) {
-    const { name, isMatch, isPublic, matchName } = props;
+    const handleProfile = (IsMe) => {
+        navigate("/mypage", {
+            state: IsMe ? { id, name } : { id: matchId, name: matchName }
+        });
+    };
 
     let matchMember;
 
     if(!isMatch) {
         matchMember = <Name color="#5C5752">아직 매칭되지 않았습니다</Name>;
-    } else if(isMatch && !isPublic) {
+    } else if(isMatch && !isReveal) {
         matchMember =(
             <>
                 <Name>???</Name>
@@ -50,7 +64,7 @@ function MemberMatchInfo(props) {
     } else {
         matchMember =(
             <>
-                <Name>{matchName}</Name>
+                <Name onClick={() => handleProfile(false)} hover>{matchName}</Name>
                 <Image src={masked} />
             </>
         )
@@ -60,7 +74,7 @@ function MemberMatchInfo(props) {
         <MemberMatchInfoContainer>
             <MemberContainer>
                 <Image src={masked} />
-                <Name>{name}</Name>
+                <Name onClick={() => handleProfile(true)} hover>{name}</Name>
             </MemberContainer>
             <MemberContainer>
                 {matchMember}
@@ -68,5 +82,3 @@ function MemberMatchInfo(props) {
         </MemberMatchInfoContainer>
     );
 }
-
-export default MemberMatchInfo;

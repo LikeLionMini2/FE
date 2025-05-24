@@ -1,49 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import MyGroup from "../components/Group/MyGroup";
 import AllGroup from "../components/Group/AllGroup";
+import Button from "../components/Button";
 
 const GroupContainer = styled.div`
   position: relative;
   width: 1280px;
   height: 720px;
   margin: 0 auto;
+  padding: 10px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 20px;
+
   overflow: hidden;
   overflow-y: auto;
-
   scrollbar-width: none;
   -ms-overflow-style: none;
 `;
 
 const Title = styled.div`
-  position: absolute;
-  left: 60px;
-  top: ${(props) => props.top || "auto"};
-  font-family: "Damion", cursive;
-  font-weight: 500;
   font-size: 48px;
   line-height: 100px;
-  text-align: left;
-  color: #000000;
 `;
 
 const MyGroupContainer = styled.div`
-  position: absolute;
-  top: 120px;
-  left: 80px;
-  width: 70%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const MyGroupLeftContainer = styled.div`
+  width: 920px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 50px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;  
+`;
+
+const MyGroupRightContainer = styled.div`
+  width: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const AllGroupContainer = styled.div`
-  position: absolute;
-  top: 400px;
-  left: 80px;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -53,56 +67,76 @@ const AllGroupContainer = styled.div`
   gap: 25px;
 `;
 
-const GroupMakeButtonWrapper = styled.div`
-  position: absolute;
-  top: 150px;
-  right: 60px;
-  width: 180px;
-  height: 60px;
-  background: #716c67;
-  border-radius: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+export default function Group() {
+  const navigate = useNavigate();
+  const [myGroups, setMyGroups] = useState([]);
+  const [allGroups, setAllGroups] = useState([]);
 
-const GroupMakeButtonText = styled(Link)`
-  font-family: "Noto Sans KR", sans-serif;
-  font-weight: 500;
-  font-size: 25px;
-  color: #ffffff;
+  useEffect(() => {
+    const fetchGroups = async () => {
+      const token = localStorage.getItem("token");
 
-  &:hover {
-    color: rgba(48, 48, 48, 0.5);
-  }
-`;
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
 
-function Group() {
+      try {
+        console.log("그룹 조회 시작");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        // 내 그룹 조회
+        const myRes = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/group`,
+          config
+        );
+        setMyGroups(myRes.data);
+
+        // 전체 그룹 조회
+        const allRes = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/groups`,
+          config
+        );
+        setAllGroups(allRes.data);
+      } catch (err) {
+        console.error("그룹 조회 오류:", err);
+        alert("그룹 정보를 불러오는 데 실패했습니다.");
+        navigate("/login");
+      }
+    };
+
+    fetchGroups();
+  }, []);
+
+  const handleGroupMake = () => {
+    navigate("/group/make");
+  };
+
   return (
     <GroupContainer>
-      <Title top="10px">My Groups</Title>
+      <Title className="damion">My Groups</Title>
       <MyGroupContainer>
-        <MyGroup name={"마니또"} />
-        <MyGroup name={"마니또"} />
-        <MyGroup name={"마니또"} />
-        <MyGroup name={"마니또"} />
-        <MyGroup name={"마니또"} />
-        <MyGroup name={"마니또"} />
+        <MyGroupLeftContainer>
+          {myGroups.map((group) => (
+            <MyGroup key={group.group_id} id={group.group_id} name={group.group_name} />
+          ))}
+        </MyGroupLeftContainer>
+        <MyGroupRightContainer>
+          <Button buttonText="그룹 생성" onClick={handleGroupMake} />
+        </MyGroupRightContainer>
       </MyGroupContainer>
-      <GroupMakeButtonWrapper>
-        <GroupMakeButtonText to="/group/make">그룹 생성</GroupMakeButtonText>
-      </GroupMakeButtonWrapper>
-      <Title top="300px">All Groups</Title>
+      <Title className="damion">All Groups</Title>
       <AllGroupContainer>
-        <AllGroup name={"마니또"} memberCount={10} />
-        <AllGroup name={"마니또"} memberCount={10} />
-        <AllGroup name={"마니또"} memberCount={10} />
-        <AllGroup name={"마니또"} memberCount={10} />
-        <AllGroup name={"마니또"} memberCount={10} />
-        <AllGroup name={"마니또"} memberCount={10} />
+        {allGroups.map((group) => (
+          <AllGroup key={group.group_id} id={group.group_id} name={group.group_name} description={group.description} createdAt={group.created_at} />
+        ))}
       </AllGroupContainer>
     </GroupContainer>
   );
 }
-
-export default Group;

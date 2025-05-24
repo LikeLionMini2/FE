@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Button from "../components/Button";
 import groupImage from "../assets/group.png";
 
 const GroupDetailContainer = styled.div`
@@ -17,7 +19,7 @@ const GroupDetailContainer = styled.div`
 
 const GroupCardContainer = styled.div`
   width: 370px;
-  height: 515px;
+  height: 540px;
   padding: 50px 65px;
   border-radius: 20px;
   background: #FFF;
@@ -33,7 +35,6 @@ const GroupImage = styled.img`
 `;
 
 const GroupInfoContainer = styled.div`
-  font-family: "Noto Sans KR", sans-serif;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -45,7 +46,7 @@ const GroupName = styled.div`
   font-size: 30px;
 `;
 
-const GroupMemberCount = styled.div`
+const GroupCreatedAt = styled.div`
   font-weight: bold;
   font-size: 25px;
   color: #5C5752;
@@ -57,45 +58,53 @@ const GroupDescription = styled.div`
   white-space: pre-line;
 `;
 
-const GroupJoinButtonWrapper = styled.div`
-  width: 180px;
-  height: 60px;
-  background: #716c67;
-  border-radius: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+export default function GroupDetail() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id, name, description, createdAt } = location.state;
 
-const GroupJoinButtonText = styled(Link)`
-  font-family: "Noto Sans KR", sans-serif;
-  font-weight: 500;
-  font-size: 25px;
-  color: #ffffff;
+  const handleGroupJoin = async () => {
+    const token = localStorage.getItem("token");
 
-  &:hover {
-    color: rgba(48, 48, 48, 0.5);
-  }
-`;
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
 
-function GroupDetail() {
+    try {
+      console.log("그룹 가입 시작");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/v1/groups/${id}/join`,
+        {},
+        config
+      );
+      navigate("/board", { state: { id } });
+    } catch (err) {
+      console.error("그룹 가입 실패:", err);
+      alert("그룹 가입에 실패했습니다. 다시 시도해주세요.");
+      navigate("/group");
+    }
+  };
+
   return (
   <GroupDetailContainer>
     <GroupCardContainer>
       <GroupImage src={groupImage} />
       <GroupInfoContainer>
-        <GroupName>마니또</GroupName>
-        <GroupMemberCount>10/20</GroupMemberCount>
-        <GroupDescription>
-          {"그룹에 대한 설명\n어쩌구 저쩌구\n다 보이도록"}
-        </GroupDescription>
+        <GroupName>{name}</GroupName>
+        <GroupCreatedAt>{createdAt}</GroupCreatedAt>
+        <GroupDescription>{description}</GroupDescription>
       </GroupInfoContainer>
     </GroupCardContainer>
-    <GroupJoinButtonWrapper>
-      <GroupJoinButtonText to="/board">그룹 가입</GroupJoinButtonText>
-    </GroupJoinButtonWrapper>
+    <Button buttonText="그룹 가입" onClick={handleGroupJoin} />
   </GroupDetailContainer>
   );
 }
-
-export default GroupDetail;
