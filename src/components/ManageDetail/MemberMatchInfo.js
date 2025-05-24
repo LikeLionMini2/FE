@@ -41,13 +41,15 @@ const Name = styled.span`
     `}
 `;
 
-export default function MemberMatchInfo({ id, name, isMatch, isReveal, matchId, matchName }) {
+export default function MemberMatchInfo({ id, nickname, isMatch, isReveal, matchId, matchNickname }) {
     const navigate = useNavigate();
 
     const handleProfile = (IsMe) => {
-        navigate("/mypage", {
-            state: IsMe ? { id, name } : { id: matchId, name: matchName }
-        });
+        if(IsMe) {
+            navigate("/mypage", { state: { id, nickname } });
+        } else if(matchId && matchNickname) {
+            navigate("/mypage", { state: { id: matchId, name: matchNickname } });
+        }
     };
 
     let matchMember;
@@ -64,7 +66,7 @@ export default function MemberMatchInfo({ id, name, isMatch, isReveal, matchId, 
     } else {
         matchMember =(
             <>
-                <Name onClick={() => handleProfile(false)} hover>{matchName}</Name>
+                <Name onClick={() => handleProfile(false)} hover>{matchNickname}</Name>
                 <Image src={masked} />
             </>
         )
@@ -74,7 +76,7 @@ export default function MemberMatchInfo({ id, name, isMatch, isReveal, matchId, 
         <MemberMatchInfoContainer>
             <MemberContainer>
                 <Image src={masked} />
-                <Name onClick={() => handleProfile(true)} hover>{name}</Name>
+                <Name onClick={() => handleProfile(true)} hover>{nickname}</Name>
             </MemberContainer>
             <MemberContainer>
                 {matchMember}

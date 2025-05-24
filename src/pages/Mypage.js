@@ -143,7 +143,7 @@ const Icon = styled(AiOutlineSend)`
 
 export default function Mypage() {
   const location = useLocation();
-  const { id, name } = location.state;
+  const { id, nickname } = location.state;
 
   const contents = [];
 
@@ -155,7 +155,7 @@ export default function Mypage() {
   return (
     <MypageContainer>
       <ProfileContainer>
-        <Title>{name}님의 PROFILE</Title>
+        <Title>{nickname}님의 PROFILE</Title>
         <ProfileDetailContainer>
           <RabbitImage src={rabbit} />
           <ProfileDetailRightContainer>

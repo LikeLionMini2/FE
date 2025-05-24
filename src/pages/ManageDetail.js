@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -88,24 +88,138 @@ export default function ManageDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id, name, description, createdAt } = location.state;
-
+  
+  const [members, setMembers] = useState([]);
   const [isMatch, setIsMatch] = useState(false);
   const [isReveal, setIsReveal] = useState(false);
-
-  const members = [];
-
-  // 테스트용 멤버 생성
-  for (let i = 1; i <= 5; i++) {
-    members.push({ id: i, name: `마니또${i}`, matchId: (i+1), matchName: `테스트${i}` });
-  }
-
-  const handleMatch = () => {
-    setIsMatch(true);
-    setIsReveal(false);
-  };
   
-  const handleReveal = () => {
-    setIsReveal(true);
+  useEffect(() => {
+    const fetchMembers = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const fetchMatchResult = async () => {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/${id}/matching/results`,
+          config
+        );
+        setMembers(res.data.map((m) => ({
+          id: m.giverId,
+          nickname: m.giverNickname,
+          matchId: m.receiverId,
+          matchNickname: m.receiverNickname
+        })));
+        setIsMatch(true);
+        setIsReveal(true);
+      };
+
+      const fetchGroupMembers = async () => {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/${id}/members`,
+          config
+        );
+        // const { isMatched, members } = res.data;
+        setMembers(res.data.map((m) => ({
+          id: m.id,
+          nickname: m.nickname,
+          matchId: null,
+          matchNickname: null
+        })));
+        // setIsMatch(isMatched);
+        setIsReveal(false);
+      };
+
+      try {
+        console.log("마니또 공개 여부 확인");
+        await fetchMatchResult();
+      } catch (err) {
+        try {
+          console.log("그룹 멤버 조회");
+          await fetchGroupMembers();
+        } catch (error) {
+          console.error("멤버 조회 오류:", error);
+          alert("멤버 정보를 불러오는 데 실패했습니다.");
+          navigate("/manage");
+        }
+      }
+    };
+
+    fetchMembers();
+  }, []);
+
+  const handleMatch = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      console.log("마니또 매칭 시작");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/v1/${id}/matching/start`,
+        {},
+        config
+      );
+      alert("마니또 매칭이 완료되었습니다.");
+      setIsMatch(true);
+      setIsReveal(false);
+    } catch (err) {
+      console.error("마니또 매칭 실패:", err);
+      alert("마니또 매칭에 실패했습니다.");
+    }
+  };
+
+  const handleReveal = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      console.log("마니또 공개 시작");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/v1/${id}/matching/reveal`,
+        {},
+        config
+      );
+      alert("마니또 공개가 완료되었습니다.");
+      setIsReveal(true);
+    } catch (err) {
+      console.error("마니또 공개 실패:", err);
+      alert("마니또 공개에 실패했습니다.");
+    }
   };
 
   const handleGroupDelete = async () => {
@@ -156,9 +270,9 @@ export default function ManageDetail() {
         <MemberMatchInfoContainer>
           {members.map((member) => (
             <MemberMatchInfo key={member.id}
-              id={member.id} name={member.name}
+              id={member.id} nickname={member.nickname}
               isMatch={isMatch} isReveal={isReveal}
-              matchId={member.matchId} matchName={member.matchName} />
+              matchId={member.matchId} matchNickname={member.matchNickname} />
           ))}
         </MemberMatchInfoContainer>
       </GroupDetailContainer>
