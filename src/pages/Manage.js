@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import ManageGroup from "../components/Manage/ManageGroup";
 
 const ManageContainer = styled.div`
@@ -35,19 +37,51 @@ const ManageGroupContainer = styled.div`
 `;
 
 export default function Manage() {
-  const manageGroups = [];
+  const navigate = useNavigate();
+  const [manageGroups, setManageGroups] = useState([]);
 
-  // 테스트용 그룹 생성
-  for (let i = 1; i <= 5; i++) {
-    manageGroups.push({ id: i, name: `마니또${i}`, description: `테스트${i}`, createdAt: "2025-05-23T19:20:43.861222" });
-  }
+  useEffect(() => {
+      const fetchGroups = async () => {
+        const token = localStorage.getItem("token");
+  
+        if (!token) {
+          alert("로그인이 필요합니다.");
+          navigate("/login");
+          return;
+        }
+  
+        try {
+          console.log("그룹 조회 시작");
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          };
+          
+          const res = await axios.get(
+            `${process.env.REACT_APP_API_URL}/api/v1/group`,
+            config
+          );
+          setManageGroups(res.data);
+
+          console.log(res.data);
+        } catch (err) {
+          console.error("그룹 조회 오류:", err);
+          alert("그룹 정보를 불러오는 데 실패했습니다.");
+          navigate("/group");
+        }
+      };
+  
+      fetchGroups();
+    }, []);
 
   return (
     <ManageContainer>
       <Title className="damion">Manage</Title>
       <ManageGroupContainer>
         {manageGroups.map((group) => (
-          <ManageGroup key={group.id} id={group.id} name={group.name} description={group.description} createdAt={group.createdAt} />
+          <ManageGroup key={group.group_id} id={group.group_id} name={group.group_name} description={group.description} createdAt={group.created_at} />
         ))}
       </ManageGroupContainer>
     </ManageContainer>
