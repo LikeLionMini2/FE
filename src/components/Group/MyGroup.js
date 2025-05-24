@@ -11,12 +11,14 @@ const MyGroupContainer = styled.div`
 `;
 
 const GroupImage = styled.img`
+    width: 100px;
     height: 100px;
 `;
 
 const GroupName = styled(Link)`
     font-weight: bold;
     font-size: 30px;
+    line-height: 50px;
     color: #000000;
 
     &:hover {
