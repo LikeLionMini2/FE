@@ -83,7 +83,7 @@ const ButtonContainer = styled.div`
   gap: 40px;
 `;
 
-export default function ManageDetail({}) {
+export default function ManageDetail() {
   const location = useLocation();
   const { id, name, description, createdAt } = location.state;
 
@@ -94,7 +94,7 @@ export default function ManageDetail({}) {
 
   // 테스트용 멤버 생성
   for (let i = 1; i <= 5; i++) {
-    members.push({ id: i, name: `마니또${i}`, matchName: `테스트${i}` });
+    members.push({ id: i, name: `마니또${i}`, matchId: (i+1), matchName: `테스트${i}` });
   }
 
   const handleMatch = () => {
@@ -119,7 +119,10 @@ export default function ManageDetail({}) {
         </GroupContainer>
         <MemberMatchInfoContainer>
           {members.map((member) => (
-            <MemberMatchInfo key={member.id} id={member.id} name={member.name} isMatch={isMatch} isReveal={isReveal} matchName={member.matchName} />
+            <MemberMatchInfo key={member.id}
+              id={member.id} name={member.name}
+              isMatch={isMatch} isReveal={isReveal}
+              matchId={member.matchId} matchName={member.matchName} />
           ))}
         </MemberMatchInfoContainer>
       </GroupDetailContainer>

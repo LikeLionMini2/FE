@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
+import GuestBook from "../components/Mypage/GuestBook";
 import Button from "../components/Button";
 import rabbit from "../assets/fav.png"
 import introduce from "../assets/introduce.png";
-import masked from "../assets/masked.png";
 import { AiOutlineSend } from 'react-icons/ai';
 
 const MypageContainer = styled.div`
@@ -58,7 +59,21 @@ const GuestbookDetailContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 22px;
+  gap: 20px;
+`;
+
+const GuestbookContentContainer = styled.div`
+  width: 365px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  
+  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const GuestbookInputContainer = styled.div`
@@ -98,25 +113,6 @@ const IntroduceText = styled.div`
   width: 365px;
 `;
 
-const CommentContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 18px;
-`;
-
-const CommentProfileImage = styled.img`
-  width: 50px;
-  height: 50px;
-  border: solid 3px #563213;
-  border-radius: 100px;
-`;
-
-const CommentText = styled.div`
-  font-weight: 500;
-  font-size: 24px;
-`;
-
 const Input = styled.input`
   width: 280px;
   height: 40px;
@@ -134,7 +130,6 @@ const Input = styled.input`
   &:hover {
     background-color: rgba(255, 255, 255, 0.4);
   }
-
   &:focus {
     background-color: rgba(255, 255, 255, 0.4);
   }
@@ -147,10 +142,20 @@ const Icon = styled(AiOutlineSend)`
 `;
 
 export default function Mypage() {
+  const location = useLocation();
+  const { id, name } = location.state;
+
+  const contents = [];
+
+  // 테스트용 방명록 생성
+  for (let i = 1; i <= 10; i++) {
+    contents.push({ id: i, content: `댓글${i}` });
+  }
+
   return (
     <MypageContainer>
       <ProfileContainer>
-        <Title>NULL님의 MYPROFILE</Title>
+        <Title>{name}님의 PROFILE</Title>
         <ProfileDetailContainer>
           <RabbitImage src={rabbit} />
           <ProfileDetailRightContainer>
@@ -164,18 +169,11 @@ export default function Mypage() {
       <GuestbookContainer>
         <GuestbookDetailContainer>
           <Title>방명록</Title>
-          <CommentContainer>
-            <CommentProfileImage src={masked} />
-            <CommentText>댓글1</CommentText>
-          </CommentContainer>
-          <CommentContainer>
-            <CommentProfileImage src={masked} />
-            <CommentText>댓글2</CommentText>
-          </CommentContainer>          
-          <CommentContainer>
-            <CommentProfileImage src={masked} />
-            <CommentText>댓글3</CommentText>
-          </CommentContainer>
+          <GuestbookContentContainer>
+            {contents.map((content) => (
+              <GuestBook key={content.id} content={content.content} />
+            ))}
+          </GuestbookContentContainer>
         </GuestbookDetailContainer>
         <GuestbookInputContainer>
           <Input placeholder="방명록을 남겨주세요" />

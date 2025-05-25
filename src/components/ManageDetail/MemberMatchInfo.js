@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import masked from "../../assets/masked.png";
 import hidden from "../../assets/hidden.png";
 
@@ -28,10 +29,27 @@ const Image = styled.img`
 const Name = styled.span`
     font-weight: bold;
     font-size: 20px;
-    color: ${(props) => props.color || "#000"}
+    color: ${(props) => props.color || "#000"};
+    cursor: pointer;
+
+    ${(props) =>
+      props.hover &&
+      `
+        &:hover {
+            color: rgba(48, 48, 48, 0.5);
+        }
+    `}
 `;
 
-export default function MemberMatchInfo({ name, isMatch, isReveal, matchName }) {
+export default function MemberMatchInfo({ id, name, isMatch, isReveal, matchId, matchName }) {
+    const navigate = useNavigate();
+
+    const handleProfile = (IsMe) => {
+        navigate("/mypage", {
+            state: IsMe ? { id, name } : { id: matchId, name: matchName }
+        });
+    };
+
     let matchMember;
 
     if(!isMatch) {
@@ -46,7 +64,7 @@ export default function MemberMatchInfo({ name, isMatch, isReveal, matchName }) 
     } else {
         matchMember =(
             <>
-                <Name>{matchName}</Name>
+                <Name onClick={() => handleProfile(false)} hover>{matchName}</Name>
                 <Image src={masked} />
             </>
         )
@@ -56,7 +74,7 @@ export default function MemberMatchInfo({ name, isMatch, isReveal, matchName }) 
         <MemberMatchInfoContainer>
             <MemberContainer>
                 <Image src={masked} />
-                <Name>{name}</Name>
+                <Name onClick={() => handleProfile(true)} hover>{name}</Name>
             </MemberContainer>
             <MemberContainer>
                 {matchMember}
