@@ -1,13 +1,44 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 function GroupMake() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
+  const [message, setMessage] = useState("");
+  const [groupname, setGroupname] = useState("");
+  const [description, setDescription] = useState("");
   const handleMakeClick = () => {
-    alert("그룹이 생성 되었습니다.");
-    navigate("/group");
+    if (!groupname || !description) {
+      setMessage("모든 항목을 입력해주세요.");
+      return;
+    }
+
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}/api/v1/groups`,
+        {
+          groupName: groupname,
+          description: description,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        alert("그룹이 생성 되었습니다.");
+        navigate("/group");
+      })
+      .catch((err) => {
+        setMessage(err.response?.data?.message || "오류가 발생했습니다.");
+        console.error(err);
+      });
   };
   return (
     <MainContainer>
@@ -16,12 +47,25 @@ function GroupMake() {
 
         <InputContainer>
           <Label>그룹명</Label>
-          <Input maxLength={10} placeholder="최대 10자까지 입력 가능합니다" />
+          <Input
+            maxLength={10}
+            placeholder="최대 10자까지 입력 가능합니다"
+            value={groupname}
+            onChange={(e) => {
+              setGroupname(e.target.value);
+            }}
+          />
         </InputContainer>
 
         <InputContainer>
           <Label>그룹 목적</Label>
-          <InputPurpose placeholder="그룹 목적을 입력해주세요" />
+          <InputPurpose
+            placeholder="그룹 목적을 입력해주세요"
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+            }}
+          />
         </InputContainer>
       </BoxContainer>
       <SaveButton onClick={handleMakeClick}>그룹 생성 저장</SaveButton>
