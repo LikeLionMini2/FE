@@ -78,7 +78,7 @@ function Signin() {
             "X-CSRFToken": csrfToken, // CSRF 토큰 전달
             "Content-Type": "application/json",
           },
-          // withCredentials: true, // 쿠키 포함 요청
+          withCredentials: true, // 쿠키 포함 요청
         }
       )
       .then((response) => {
