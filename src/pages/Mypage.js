@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import GuestBook from "../components/Mypage/GuestBook";
 import Button from "../components/Button";
 import rabbit from "../assets/fav.png"
@@ -23,7 +24,7 @@ const ProfileContainer = styled.div`
   height: 600px;
   border-radius: 20px 0 0 20px;
   background: #E0DFDD;
-  padding: 16px 16px 0;
+  padding: 20px 20px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -39,7 +40,7 @@ const ProfileDetailRightContainer = styled.div`
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 20px 0;
 `;
 
 const GuestbookContainer = styled.div`
@@ -55,7 +56,7 @@ const GuestbookDetailContainer = styled.div`
   height: 520px;
   border-radius: 0 20px 0 0;
   background: #E0DFDD;
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -81,7 +82,7 @@ const GuestbookInputContainer = styled.div`
   height: 80px;
   border-radius: 0 0 20px 0;
   background: #3C3C3C;
-  padding: 25px 16px;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -95,13 +96,14 @@ const Title = styled.span`
 
 const RabbitImage = styled.img`
   height: 500px;
+  padding-left: 20px;
 `;
 
 const IntroduceImage = styled.div`
   background-image: url(${introduce});
   background-position: left;
   background-repeat: no-repeat;
-  width: 420px;
+  width: 408px;
   height: 260px;
 `;
 
@@ -111,6 +113,7 @@ const IntroduceText = styled.div`
   color: #563213;
   padding: 40px;
   width: 365px;
+  height: 178px;
 `;
 
 const Input = styled.input`
@@ -120,7 +123,7 @@ const Input = styled.input`
   border: none;
   color: white;
   padding: 10px;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 300;
 
   ::placeholder {
@@ -139,18 +142,99 @@ const Icon = styled(AiOutlineSend)`
   width: 30px;
   height: 30px;
   color: white;
+  cursor: pointer;
 `;
 
 export default function Mypage() {
+  const navigate = useNavigate();
   const location = useLocation();
   const { id, nickname } = location.state;
 
-  const contents = [];
+  const [myMessage, setMyMessage] = useState("");
+  const [guestBooks, setGuestBooks] = useState([]);
+  const [isMine, setIsMine] = useState(false);
+  const [guestBook, setGuestBook] = useState("");
 
-  // 테스트용 방명록 생성
-  for (let i = 1; i <= 10; i++) {
-    contents.push({ id: i, content: `댓글${i}` });
-  }
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
+      
+      try {
+        console.log("프로필 조회 시작");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/profile/${id}`,
+          config
+        );
+        setMyMessage(res.data.myMessage);
+        setGuestBooks(res.data.guestBooks);
+        setIsMine(res.data.mine);
+      } catch (err) {
+        console.error("프로필 조회 오류:", err);
+        alert("프로필 정보를 불러오는 데 실패했습니다.");
+        navigate("/group");
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleMessageEdit = () => {
+    navigate("/mypage/myinfo");
+  };
+
+  const handleGusetBookSend = async () => {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+    
+    try {
+      console.log("방명록 전송 시작");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      
+      // 방명록 전송
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/v1/guests`,
+        {
+          memberId: id,
+          content: guestBook
+        },
+        config
+      );
+
+      // 전체 방명록 반영
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/v1/${id}/guests`,
+        config
+      )
+      setGuestBooks(res.data);
+      setGuestBook("");
+    } catch (err) {
+      console.error("방명록 전송 오류:", err);
+      alert("방명록을 전송하는 데 실패했습니다.");
+    }
+  };
 
   return (
     <MypageContainer>
@@ -160,9 +244,9 @@ export default function Mypage() {
           <RabbitImage src={rabbit} />
           <ProfileDetailRightContainer>
             <IntroduceImage>
-              <IntroduceText>대충 아무 자기 소개 글</IntroduceText>
+              <IntroduceText>{myMessage}</IntroduceText>
             </IntroduceImage>
-            <Button backgroundColor="#E06A34" buttonText="프로필 수정" />
+            { isMine && <Button backgroundColor="#E06A34" buttonText="메시지 변경" onClick={handleMessageEdit} /> }
           </ProfileDetailRightContainer>
         </ProfileDetailContainer>
       </ProfileContainer>
@@ -170,14 +254,16 @@ export default function Mypage() {
         <GuestbookDetailContainer>
           <Title>방명록</Title>
           <GuestbookContentContainer>
-            {contents.map((content) => (
-              <GuestBook key={content.id} content={content.content} />
+            {guestBooks.map((guestBook) => (
+              <GuestBook key={guestBook.id} content={guestBook.content} createdAt={guestBook.createdAt} />
             ))}
           </GuestbookContentContainer>
         </GuestbookDetailContainer>
         <GuestbookInputContainer>
-          <Input placeholder="방명록을 남겨주세요" />
-          <Icon />
+          <Input type="text" value={guestBook} placeholder="방명록을 남겨주세요"
+            onChange={(e) => setGuestBook(e.target.value)}
+            onKeyDown={(e) => { if(e.key == "Enter") handleGusetBookSend(); }} />
+          <Icon onClick={handleGusetBookSend} />
         </GuestbookInputContainer>
       </GuestbookContainer>
     </MypageContainer>
