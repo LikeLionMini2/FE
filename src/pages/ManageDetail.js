@@ -92,72 +92,70 @@ export default function ManageDetail() {
   const [members, setMembers] = useState([]);
   const [isMatch, setIsMatch] = useState(false);
   const [isReveal, setIsReveal] = useState(false);
-  
-  useEffect(() => {
-    const fetchMembers = async () => {
-      const token = localStorage.getItem("token");
 
-      if (!token) {
-        alert("로그인이 필요합니다.");
-        navigate("/login");
-        return;
-      }
+  const fetchMembers = async () => {
+    const token = localStorage.getItem("token");
 
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
 
-      const fetchMatchResult = async () => {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/v1/${id}/matching/results`,
-          config
-        );
-        setMembers(res.data.map((m) => ({
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      console.log("마니또 공개 여부 확인");
+
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/v1/${id}/matching/results`,
+        config
+      );
+      setMembers(
+        res.data.map((m) => ({
           id: m.giverId,
           nickname: m.giverNickname,
           matchId: m.receiverId,
-          matchNickname: m.receiverNickname
-        })));
-        setIsMatch(true);
-        setIsReveal(true);
-      };
+          matchNickname: m.receiverNickname,
+        }))
+      );
+      setIsMatch(true);
+      setIsReveal(true);
+    } catch {
+      try {
+        console.log("그룹 멤버 조회");
 
-      const fetchGroupMembers = async () => {
         const res = await axios.get(
           `${process.env.REACT_APP_API_URL}/api/v1/${id}/members`,
           config
         );
         const { matched, members } = res.data;
-        setMembers(members.map((m) => ({
-          id: m.id,
-          nickname: m.nickname,
-          matchId: null,
-          matchNickname: null
-        })));
+        setMembers(
+          members.map((m) => ({
+            id: m.id,
+            nickname: m.nickname,
+            matchId: null,
+            matchNickname: null,
+          }))
+        );
         setIsMatch(matched);
         setIsReveal(false);
-      };
-
-      try {
-        console.log("마니또 공개 여부 확인");
-        await fetchMatchResult();
-      } catch (err) {
-        try {
-          console.log("그룹 멤버 조회");
-          await fetchGroupMembers();
-        } catch (error) {
-          console.error("멤버 조회 오류:", error);
-          alert("멤버 정보를 불러오는 데 실패했습니다.");
-          navigate("/manage");
-        }
+      } catch (error) {
+        console.error("멤버 조회 오류:", error);
+        alert("멤버 정보를 불러오는 데 실패했습니다.");
+        navigate("/manage");
       }
-    };
-
+    }
+  };
+  
+  useEffect(() => {
     fetchMembers();
-  }, [isMatch, isReveal]);
+  }, []);
 
   const handleMatch = async () => {
     const token = localStorage.getItem("token");
@@ -183,8 +181,7 @@ export default function ManageDetail() {
         config
       );
       alert("마니또 매칭이 완료되었습니다.");
-      setIsMatch(true);
-      setIsReveal(false);
+      await fetchMembers();
     } catch (err) {
       console.error("마니또 매칭 실패:", err);
       alert("마니또 매칭에 실패했습니다.");
@@ -215,7 +212,7 @@ export default function ManageDetail() {
         config
       );
       alert("마니또 공개가 완료되었습니다.");
-      setIsReveal(true);
+      await fetchMembers();
     } catch (err) {
       console.error("마니또 공개 실패:", err);
       alert("마니또 공개에 실패했습니다.");
