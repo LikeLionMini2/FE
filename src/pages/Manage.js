@@ -41,40 +41,38 @@ export default function Manage() {
   const [manageGroups, setManageGroups] = useState([]);
 
   useEffect(() => {
-      const fetchGroups = async () => {
-        const token = localStorage.getItem("token");
-  
-        if (!token) {
-          alert("로그인이 필요합니다.");
-          navigate("/login");
-          return;
-        }
-  
-        try {
-          console.log("그룹 조회 시작");
-          const config = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          
-          const res = await axios.get(
-            `${process.env.REACT_APP_API_URL}/api/v1/group`,
-            config
-          );
-          setManageGroups(res.data);
+    const fetchGroups = async () => {
+      const token = localStorage.getItem("token");
 
-          console.log(res.data);
-        } catch (err) {
-          console.error("그룹 조회 오류:", err);
-          alert("그룹 정보를 불러오는 데 실패했습니다.");
-          navigate("/group");
-        }
-      };
-  
-      fetchGroups();
-    }, []);
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
+
+      try {
+        console.log("그룹 조회 시작");
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/group`,
+          config
+        );
+        setManageGroups(res.data);
+      } catch (err) {
+        console.error("그룹 조회 오류:", err);
+        alert("그룹 정보를 불러오는 데 실패했습니다.");
+        navigate("/group");
+      }
+    };
+
+    fetchGroups();
+  }, []);
 
   return (
     <ManageContainer>
