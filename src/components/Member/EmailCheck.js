@@ -22,10 +22,20 @@ function EmailCheck({
         email: value,
       })
       .then((res) => {
-        alert(res.data.message || "이메일 사용 가능");
+        const isDuplicate = res.data.duplicate; // 서버가 '중복 여부'를 bool로 주는 경우
+        if (isDuplicate) {
+          alert("이메일 사용 불가");
+        } else {
+          alert("이메일 사용 가능");
+        }
       })
       .catch((err) => {
-        alert(err.response?.data?.message || "오류가 발생했습니다.");
+        const status = err.response?.status;
+        if (status === 409) {
+          alert("이메일 사용 불가");
+        } else {
+          alert(err.response?.data?.message || "오류가 발생했습니다.");
+        }
       });
   };
   return (

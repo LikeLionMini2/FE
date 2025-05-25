@@ -47,6 +47,12 @@ function Signin() {
     registeraxios();
   };
 
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  };
+
   const [useridinput, setUseridinput] = useState("");
   const [emailinput, setEmailinput] = useState("");
   const [passwordinput, setPasswordinput] = useState("");
@@ -58,12 +64,23 @@ function Signin() {
 
   const registeraxios = () => {
     console.log("회원가입 요청 시작");
+    const csrfToken = getCookie("csrftoken");
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/v1/signup`, {
-        email: emailinput,
-        password: passwordinput,
-        nickname: useridinput,
-      })
+      .post(
+        `${process.env.REACT_APP_API_URL}/api/v1/signup`,
+        {
+          email: emailinput,
+          password: passwordinput,
+          nickname: useridinput,
+        },
+        {
+          headers: {
+            "X-CSRFToken": csrfToken, // CSRF 토큰 전달
+            "Content-Type": "application/json",
+          },
+          // withCredentials: true, // 쿠키 포함 요청
+        }
+      )
       .then((response) => {
         console.log(response);
         alert("회원가입 성공");
