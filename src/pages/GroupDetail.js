@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Button from "../components/Button";
 import groupImage from "../assets/group.png";
 
@@ -62,8 +63,35 @@ export default function GroupDetail() {
   const location = useLocation();
   const { id, name, description, createdAt } = location.state;
 
-  const handleGroupJoin = () => {
-    navigate("/board");
+  const handleGroupJoin = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      console.log("그룹 가입 시작");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/v1/groups/${id}/join`,
+        {},
+        config
+      );
+      navigate("/board", { state: { id } });
+    } catch (err) {
+      console.error("그룹 가입 실패:", err);
+      alert("그룹 가입에 실패했습니다. 다시 시도해주세요.");
+      navigate("/group");
+    }
   };
 
   return (

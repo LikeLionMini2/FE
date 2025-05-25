@@ -18,7 +18,7 @@ const GroupImage = styled.img`
 const GroupName = styled(Link)`
     font-weight: bold;
     font-size: 30px;
-    line-height: 50px;
+    line-height: 40px;
     color: #000000;
 
     &:hover {
@@ -30,7 +30,7 @@ export default function MyGroup({ id, name }) {
     return (
         <MyGroupContainer>
             <GroupImage src={groupImage} />
-            <GroupName to="/board">{name}</GroupName>
+            <GroupName to="/board" state={{ id }}>{name}</GroupName>
         </MyGroupContainer>
     );
 }
