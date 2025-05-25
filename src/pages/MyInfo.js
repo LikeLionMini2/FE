@@ -1,36 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import InputRow from "../components/Mypage/InputRow";
 import image from "../assets/fav.png";
-
+import axios from "axios";
 const MyInfo = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("로그인이 필요합니다.");
+  }
+  const [message, setMessage] = useState("");
   const [form, setForm] = useState({
-    name: "",
-    id: "",
+    nickname: "",
     email: "",
     password: "",
     newPassword: "",
     confirmPassword: "",
   });
 
+  // 회원 정보 GET 요청
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/api/v1/mypage`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        const data = res.data;
+        setForm((prev) => ({
+          ...prev,
+          nickname: data.nickname || "",
+          email: data.email || "",
+          password: data.password || "",
+        }));
+      })
+      .catch((err) => {
+        console.error("회원정보 불러오기 실패:", err);
+      });
+  }, [token]);
+
   const handleChange = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value });
   };
 
-  const handleSave = () => {
-    if (!form.name || !form.id || !form.email) {
-      alert("이름, 아이디, 이메일을 입력해주세요.");
-      return;
-    }
+  const handleSave = async () => {
+    try {
+      console.log("닉네임 저장 요청 보냄:", form.nickname);
+      console.log("토큰:", token);
+      const res1 = await axios.put(
+        `${process.env.REACT_APP_API_URL}/api/v1/mypage/nickname`,
+        { nickname: form.nickname },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("닉네임 저장 응답:", res1.data);
 
-    if (form.newPassword !== form.confirmPassword) {
-      alert("새 비밀번호가 일치하지 않습니다.");
-      return;
-    }
+      console.log("상태메세지 저장 요청 보냄:", message);
+      const res2 = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/v1/mypage/message`,
+        { message },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("상태메세지 저장 응답:", res2.data);
 
-    alert("저장되었습니다.");
+      alert("정보가 성공적으로 저장되었습니다.");
+    } catch (err) {
+      console.error("저장 실패:", err);
+      alert(err.response?.data?.message || "오류가 발생했습니다.");
+      console.error("저장 실패:", err.response?.data || err);
+    }
   };
-
   return (
     <Container>
       <MainBox>
@@ -39,28 +86,33 @@ const MyInfo = () => {
         </ImageBox>
 
         <FormBox>
-          <Title>00님의 MYPAGE</Title>
+          <Title>{form.nickname || "회원"}님의 MYPAGE</Title>
           <Card>
             <InputRow
-              label="이름"
-              value={form.name}
-              onChange={handleChange("name")}
+              label="상태메세지"
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+              }}
             />
             <InputRow
-              label="아이디"
-              value={form.id}
-              onChange={handleChange("id")}
+              label="닉네임"
+              value={form.nickname}
+              onChange={handleChange("nickname")}
             />
             <InputRow
               label="이메일"
               value={form.email}
-              onChange={handleChange("email")}
+              disabled
+              // onChange={handleChange("email")}
             />
             <InputRow
               label="비밀번호"
               value={form.password}
-              onChange={handleChange("password")}
+              // onChange={handleChange("password")}
               type="password"
+              autoComplete="new-password"
+              disabled
             />
             <InputRow
               label="새 비밀번호"
