@@ -48,7 +48,7 @@ export default function MemberMatchInfo({ id, nickname, isMatch, isReveal, match
         if(IsMe) {
             navigate("/mypage", { state: { id, nickname } });
         } else if(matchId && matchNickname) {
-            navigate("/mypage", { state: { id: matchId, name: matchNickname } });
+            navigate("/mypage", { state: { id: matchId, nickname: matchNickname } });
         }
     };
 

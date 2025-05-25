@@ -130,14 +130,14 @@ export default function ManageDetail() {
           `${process.env.REACT_APP_API_URL}/api/v1/${id}/members`,
           config
         );
-        // const { isMatched, members } = res.data;
-        setMembers(res.data.map((m) => ({
+        const { matched, members } = res.data;
+        setMembers(members.map((m) => ({
           id: m.id,
           nickname: m.nickname,
           matchId: null,
           matchNickname: null
         })));
-        // setIsMatch(isMatched);
+        setIsMatch(matched);
         setIsReveal(false);
       };
 
@@ -157,7 +157,7 @@ export default function ManageDetail() {
     };
 
     fetchMembers();
-  }, []);
+  }, [isMatch, isReveal]);
 
   const handleMatch = async () => {
     const token = localStorage.getItem("token");
