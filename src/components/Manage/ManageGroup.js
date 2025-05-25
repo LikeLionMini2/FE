@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Button from "../Button";
 import groupImage from "../../assets/group.png";
 
 const ManageGroupContainer = styled.div`
@@ -15,17 +16,20 @@ const ManageGroupContainer = styled.div`
     gap: 25px;
 `;
 
+const GroupInfoContainer = styled.div`
+    display: flex;
+    gap: 25px;
+`;
+
 const GroupImage = styled.img`
     height: 120px;
 `;
 
-const GroupInfoContainer = styled.div`
-    font-family: "Noto Sans KR", sans-serif;
+const GroupInfoTextContainer = styled.div`
     text-align: left;
-    position: relative;
-    left: -230px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 12px;
 `;
 
@@ -34,7 +38,7 @@ const GroupName = styled.div`
     font-size: 30px;
 `;
 
-const GroupMemberCount = styled.div`
+const GroupCreatedAt = styled.div`
     font-weight: bold;
     font-size: 25px;
     color: #5C5752;
@@ -45,43 +49,32 @@ const GroupDescription = styled.div`
     font-size: 25px;
 `;
 
-const MoreButtonWrapper = styled.div`
-    width: 150px;
-    height: 60px;
-    background: #716c67;
-    border-radius: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
+export default function ManageGroup({ id, name, description, createdAt }) {
+    const navigate = useNavigate();
 
-const MoreButtonText = styled(Link)`
-    font-family: "Damion", cursive;
-    font-weight: 300;
-    font-size: 25px;
-    color: #ffffff;
-
-    &:hover {
-        color: rgba(48, 48, 48, 0.5);
-    }
-`;
-
-function ManageGroup(props) {
-    const { name, memberCount, description } = props;
+    const date = new Date(createdAt);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const formattedDate = `${year}/${month}/${day}`;
+    
+    const handleMore = () => {
+        navigate("/manage/detail", {
+            state: { id, name, description, createdAt: formattedDate }
+        });
+    };
 
     return (
         <ManageGroupContainer>
-            <GroupImage src={groupImage} />
-            <GroupInfoContainer>
-                <GroupName>{name}</GroupName>
-                <GroupMemberCount>{memberCount}/20</GroupMemberCount>
-                <GroupDescription>{description}</GroupDescription>
+            <GroupInfoContainer>        
+                <GroupImage src={groupImage} />
+                <GroupInfoTextContainer>
+                    <GroupName>{name}</GroupName>
+                    <GroupCreatedAt>{formattedDate}</GroupCreatedAt>
+                    <GroupDescription>{description}</GroupDescription>
+                </GroupInfoTextContainer>
             </GroupInfoContainer>
-            <MoreButtonWrapper>
-                <MoreButtonText to="/manage/detail">More</MoreButtonText>
-            </MoreButtonWrapper>
+            <Button buttonText="More" buttonTextFont="damion" onClick={handleMore} />
         </ManageGroupContainer>
     );
 }
-
-export default ManageGroup;
