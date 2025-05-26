@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
@@ -18,7 +19,6 @@ const Container = styled.div`
 
   scrollbar-width: none;
   -ms-overflow-style: none;
-
 `;
 // over flow- x 부분부터 -ms-overflow 부분까지 스크롤축이 보이지는 않지만 위아래로 스크롤이 되게끔 하는 코드
 
@@ -146,6 +146,9 @@ const Board = () => {
   const handleWriteClick = () => {
     navigate(`/board/${groupId}/upload`);
   };
+  const handleDetail = () => {
+    navigate("/board/detail");
+  };
 
   useEffect(() => {
     async function fetchPosts() {
@@ -182,7 +185,6 @@ const Board = () => {
 
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
-
         {filteredPosts.map((post) => (
           <Post key={post.id}>
             <div className="title">{post.title}[{post.commentCount}]</div>

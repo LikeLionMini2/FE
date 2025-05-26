@@ -18,7 +18,6 @@ const Container = styled.div`
 
   scrollbar-width: none;
   -ms-overflow-style: none;
-
 `;
 
 const Box = styled.div`
@@ -40,6 +39,11 @@ const Box = styled.div`
 
 const TitleBox = styled(Box)`
   justify-content: center;
+<<<<<<< HEAD
+=======
+  padding-left: 69px;
+  /* margin-top: 50px; */
+>>>>>>> 3ca1e7b7446eaee192a52522ed0f3b3f51379fa0
 `;
 
 const ContentBox = styled(Box)`
@@ -56,7 +60,7 @@ const PostContent = styled.div`
 `;
 
 const EditButton = styled.button`
-  background-color: #E06A34;
+  background-color: #e06a34;
   color: white;
   font-size: 24px;
   font-weight: bold;
@@ -79,8 +83,7 @@ const ReactionWrapper = styled.div`
 const HeartIcon = styled.div`
   font-size: 32px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
+  margin-left: 20px;
 `;
 
 const CommentIcon = styled.div`
@@ -99,7 +102,7 @@ const CommentInputBox = styled.div`
   border-radius: 20px;
   padding-left: 69px;
   padding-right: 24px;
-  margin-top: 12px;
+  /* margin-top: 12px; */
 `;
 
 const CommentInput = styled.input`
@@ -139,6 +142,7 @@ const BoardDetail = () => {
   return (
     <Container>
       {/* 제목 박스 */}
+
       <TitleBox height={80} paddingLeft={69}>
         게시글 제목: 아 나 마니또 누군지 알 것 같은데? [3]
       </TitleBox>
