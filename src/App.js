@@ -19,7 +19,6 @@ import Manage from "./pages/Manage";
 import ManageDetail from "./pages/ManageDetail";
 import ManiMall from "./pages/ManiMall";
 import Mypage from "./pages/Mypage";
-import MypageUpload from "./pages/MypageUpload";
 import MyInfo from "./pages/MyInfo";
 
 function App() {
@@ -39,7 +38,6 @@ function App() {
           {/* 마이 페이지 */}
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/mypage/attendance" element={<Attendance />} />
-          <Route path="/mypage/upload" element={<MypageUpload />} />
           <Route path="/mypage/manimall" element={<ManiMall />} />
           <Route path="/mypage/myinfo" element={<MyInfo />} />
 
