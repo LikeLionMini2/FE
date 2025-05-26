@@ -184,7 +184,7 @@ export default function Mypage() {
       } catch (err) {
         console.error("프로필 조회 오류:", err);
         alert("프로필 정보를 불러오는 데 실패했습니다.");
-        navigate("/group");
+        navigate("/manage");
       }
     };
 
@@ -254,7 +254,7 @@ export default function Mypage() {
         <GuestbookDetailContainer>
           <Title>방명록</Title>
           <GuestbookContentContainer>
-            {guestBooks.map((guestBook) => (
+            {guestBooks.slice().reverse().map((guestBook) => (
               <GuestBook key={guestBook.id} content={guestBook.content} createdAt={guestBook.createdAt} />
             ))}
           </GuestbookContentContainer>
