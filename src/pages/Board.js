@@ -4,16 +4,25 @@ import styled from "styled-components";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
+// const Wrapper = styled.div`
+//   background-color: #d8cdb9;
+//   width: 100%;
+//   min-height: 100vh;
+//   padding: 60px 60px 42px 60px; /* 상단/하단 여백 포함 */
+//   box-sizing: border-box;
+//   font-family: "Noto Sans KR", sans-serif;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// `;
+
 const Wrapper = styled.div`
-  background-color: #d8cdb9;
-  width: 100%;
-  min-height: 100vh;
-  padding: 60px 60px 42px 60px; /* 상단/하단 여백 포함 */
-  box-sizing: border-box;
-  font-family: "Noto Sans KR", sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 1280px;
+  height: 100vh;
+  background: #d8cdb9;
+  /* overflow-x: hidden; */
+  /* overflow-y: auto; */
+  margin: 0 auto;
 `;
 
 const FilterSection = styled.div`
@@ -22,6 +31,8 @@ const FilterSection = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 26px;
+  margin-top: 26px;
+  margin-left: 40px;
 `;
 
 const GroupButton = styled.button`
@@ -75,9 +86,10 @@ const PostContainer = styled.div`
   background-color: white;
   width: 1152px;
   padding: 40px 56px 60px 56px;
-  padding-top: 100px;
+  /* padding-top: 100px; */
   border-radius: 30px;
   box-sizing: border-box;
+  margin-left: 40px;
 `;
 
 const WriteButton = styled.button`
@@ -135,6 +147,9 @@ const Board = () => {
   const handleWriteClick = () => {
     navigate("/board/upload");
   };
+  const handleDetail = () => {
+    navigate("/board/detail");
+  };
 
   const posts = [
     { title: "졸려운데 잠은 안 오고 같이 얘기할 사람[1]", date: "2025.04.18" },
@@ -174,7 +189,7 @@ const Board = () => {
 
         <PostList>
           {sortedPosts.map((post, index) => (
-            <Post key={index}>
+            <Post key={index} onClick={handleDetail}>
               <div className="title">{post.title}</div>
               <div className="date">{post.date}</div>
             </Post>
