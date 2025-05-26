@@ -12,29 +12,31 @@ function EmailCheck({
   placeholder,
 }) {
   const [message, setMessage] = useState("");
+
   const handleEmailCheck = () => {
     if (!value) {
       setMessage("이메일을 입력해주세요.");
       return;
     }
+
     axios
       .post(`${process.env.REACT_APP_API_URL}/api/v1/duplicate/email`, {
         email: value,
       })
       .then((res) => {
-        const isDuplicate = res.data.duplicate; // 서버가 '중복 여부'를 bool로 주는 경우
-        if (isDuplicate) {
-          alert("이메일 사용 불가");
+        const isDuplicated = res.data.duplicated;
+        if (isDuplicated) {
+          alert("이미 사용 중인 이메일입니다.");
         } else {
-          alert("이메일 사용 가능");
+          alert("사용 가능한 이메일입니다.");
         }
       })
       .catch((err) => {
         const status = err.response?.status;
-        if (status === 409) {
-          alert("이메일 사용 불가");
+        if (status === 409 || err.response?.data?.duplicated === true) {
+          alert("이미 사용 중인 이메일입니다.");
         } else {
-          alert(err.response?.data?.message || "오류가 발생했습니다.");
+          alert(err.response?.data?.message || "서버 오류가 발생했습니다.");
         }
       });
   };
