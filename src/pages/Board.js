@@ -136,6 +136,8 @@ const Board = () => {
 
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
+
 
   const clearInput = () => setKeyword("");
 
@@ -209,7 +211,9 @@ const Board = () => {
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
         {filteredPosts.map((post) => (
+
           <Post key={post.manipostId} onClick={() => handleDetail(post.manipostId)}>
+
             <div className="title">{post.title}</div>
             <div className="date">{post.createdAt}</div>
           </Post>
