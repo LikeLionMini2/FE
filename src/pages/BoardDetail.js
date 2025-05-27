@@ -1,62 +1,43 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import { FaRegHeart, FaHeart, FaRegCommentDots } from "react-icons/fa";
+// BoardDetail.js
 
-// const Container = styled.div`
-//   width: 1280px;
-//   height: 100vh;
-//   /* height: 832px; */
-//   background-color: #d8cdb9;
-//   /* padding-left: 30px; */
-//   padding-top: 70px;
-//   font-family: "Noto Sans KR", sans-serif;
-//   position: relative;
-//   margin: 0 auto;
-//   /* overflow-x: hidden;
-//   overflow-y: auto; */
-//   /* box-sizing: border-box; */
-// `;
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaRegHeart, FaHeart, FaRegCommentDots } from "react-icons/fa";
+import axios from "axios";
 
 const Container = styled.div`
   width: 1280px;
-  height: 100vh;
-  background: #d8cdb9;
-  /* overflow-x: hidden; */
-  /* overflow-y: auto; */
+  height: 720px;
+  background-color: #D8CDB9;
+  padding: 30px 82px 60px 82px;
+  font-family: "Noto Sans KR", sans-serif;
   margin: 0 auto;
-  /* padding: 20px; */
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto;
 `;
+
 const Box = styled.div`
-  width: 1124px;
-  height: ${({ height }) => height}px;
+  width: 1116px;
   background-color: #ffffff;
   border-radius: 20px;
-  box-sizing: border-box;
   font-size: 24px;
   font-weight: bold;
-  line-height: 1.6;
-  margin-top: ${({ marginTop }) => marginTop || 0}px;
-  display: flex;
-  flex-direction: column;
+  padding: ${({ paddingTop = 0, paddingBottom = 0, paddingLeft = 0, paddingRight = 0 }) =>
+    `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`};
+  margin-bottom: 31px;
+  white-space: pre-line;
 `;
 
 const TitleBox = styled(Box)`
   height: 80px;
-  justify-content: center;
-  padding-left: 69px;
-  /* margin-top: 50px; */
+  display: flex;
+  align-items: center;
 `;
 
 const ContentBox = styled(Box)`
-  padding-top: 24px;
-  padding-left: 69px;
-  padding-right: 24px;
   position: relative;
+  min-height: 218px;
 `;
 
 const ContentLabel = styled.div`
@@ -65,37 +46,39 @@ const ContentLabel = styled.div`
 
 const PostContent = styled.div`
   margin-top: 22px;
-  white-space: pre-line;
+  font-weight: 400;
+`;
+
+const EditInput = styled.textarea`
+  width: 100%;
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 20px;
+  padding: 12px;
+  margin-top: 22px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  resize: vertical;
 `;
 
 const EditButton = styled.button`
   background-color: #e06a34;
   color: white;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
   border: none;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border-radius: 24px;
   position: absolute;
   right: 24px;
   bottom: 24px;
   cursor: pointer;
-`;
-
-const CommentBox = styled(Box)`
-  padding: 24px 24px 24px 69px;
-  /* margin-left: 20px; */
+  margin-left: 10px;
 `;
 
 const ReactionWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  max-width: 1124px;
-  margin-top: 28px;
-  margin-left: auto;
-  margin-right: auto;
+  padding-top: 28px;
 `;
 
 const HeartIcon = styled.div`
@@ -115,12 +98,10 @@ const CommentInputBox = styled.div`
   display: flex;
   align-items: center;
   background-color: white;
-  width: 1124px;
+  width: 1116px;
   height: 68px;
   border-radius: 20px;
-  padding-left: 69px;
-  padding-right: 24px;
-  /* margin-top: 12px; */
+  padding: 0 24px 0 69px;
 `;
 
 const CommentInput = styled.input`
@@ -141,39 +122,154 @@ const CommentInput = styled.input`
 `;
 
 const BoardDetail = () => {
-  const [liked, setLiked] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
+  const [liked, setLiked] = useState(false);
+  const [post, setPost] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedContent, setEditedContent] = useState("");
 
-  const handleEditClick = () => {
-    navigate("/board/upload");
+  const { groupId, manipostId } = location.state || {};
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!groupId || !manipostId) {
+      alert("잘못된 접근입니다.");
+      navigate("/group");
+      return;
+    }
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    const fetchDetail = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts/${manipostId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setPost(res.data);
+        setEditedTitle(res.data.title);
+        setEditedContent(res.data.content);
+      } catch (err) {
+        console.error("게시글 상세 조회 실패", err);
+        alert("게시글을 불러오지 못했습니다.");
+      }
+    };
+
+    fetchDetail();
+  }, [groupId, manipostId, navigate, token]);
+
+  const handleEdit = () => {
+    if (window.confirm("수정하시겠습니까?")) {
+      setIsEditing(true);
+    }
   };
+
+  const handleUpdate = async () => {
+    if (!window.confirm("수정 내용을 저장하시겠습니까?")) return;
+
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/api/v1/maniposts/${manipostId}`,
+        {
+          title: editedTitle,
+          content: editedContent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("수정 완료!");
+      navigate("/board", { state: { id: groupId } });
+    } catch (err) {
+      console.error("게시글 수정 실패", err);
+      alert("수정 실패!");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("정말로 삭제하시겠습니까?")) return;
+
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/v1/maniposts/${manipostId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("삭제 완료!");
+      navigate("/board", { state: { id: groupId } });
+    } catch (err) {
+      console.error("게시글 삭제 실패", err);
+      alert("삭제 실패!");
+    }
+  };
+
+  if (!post) {
+    return (
+      <Container>
+        <h2>게시글을 불러오는 중입니다...</h2>
+      </Container>
+    );
+  }
 
   return (
     <Container>
-      {/* 제목 박스 */}
-      <TitleBox height={80} marginTop={20}>
-        게시글 제목: 아 나 마니또 누군지 알 것 같은데? [3]
+      <TitleBox paddingLeft={69}>
+        게시글 제목:{" "}
+        {isEditing ? (
+          <EditInput
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+          />
+        ) : (
+          `${post.title} [${post.commentCount || 0}]`
+        )}
       </TitleBox>
 
-      {/* 본문 박스 */}
-      <ContentBox height={218} marginTop={40}>
+      <ContentBox paddingTop={24} paddingLeft={69} paddingRight={24}>
         <ContentLabel>게시글 내용</ContentLabel>
-        <PostContent>
-          일단 2팀에 있는 것 같은데 맞을까? 뭔가 확 느껴지는 부분이 있었어!!
-          ㅎㅎㅎ
-        </PostContent>
-        <EditButton onClick={handleEditClick}>게시글 수정/삭제</EditButton>
+        {isEditing ? (
+          <EditInput
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+          />
+        ) : (
+          <PostContent>{post.content}</PostContent>
+        )}
+        {post.isMyPost && (
+          <>
+            {isEditing ? (
+              <EditButton onClick={handleUpdate}>수정 완료</EditButton>
+            ) : (
+              <>
+                <EditButton onClick={handleEdit}>게시글 수정</EditButton>
+                <EditButton onClick={handleDelete}>게시글 삭제</EditButton>
+              </>
+            )}
+          </>
+        )}
       </ContentBox>
 
-      {/* 댓글 박스 */}
-      <CommentBox height={170} marginTop={40}>
-        댓글 1: 악 ㅋㅋㅋㅋㅋㅋ 너 어떻게 안 거야? <br />
-        • 작성자: 아, 마니또가 쪽지 남겼는데 그 쪽지에서 특유의 말투가 느껴졌어
-        ㅋㅋㅋㅋㅋㅋ <br />
-        댓글 2: 일단 모르는 척 하자 ㅎㅎㅎㅎ
-      </CommentBox>
+      <Box height={170} paddingTop={24} paddingBottom={24} paddingLeft={69} paddingRight={24}>
+        댓글 1: 댓글 예시입니다. <br />
+        • 작성자: 익명 <br />
+        댓글 2: 좋은 글이에요!
+      </Box>
 
-      {/* 하트 / 댓글 아이콘 */}
       <ReactionWrapper>
         <HeartIcon onClick={() => setLiked(!liked)}>
           {liked ? <FaHeart color="black" /> : <FaRegHeart />}
@@ -183,7 +279,6 @@ const BoardDetail = () => {
         </CommentIcon>
       </ReactionWrapper>
 
-      {/* 댓글 입력창 */}
       <CommentInputBox>
         <CommentInput placeholder="댓글 달기" />
       </CommentInputBox>
