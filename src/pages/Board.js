@@ -1,5 +1,3 @@
-// Board.js
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
@@ -134,8 +132,8 @@ const Post = styled.div`
 const Board = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id: groupId } = location.state || {};
 
+  const { id: groupId } = location.state || {};
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
 
@@ -171,6 +169,7 @@ const Board = () => {
         );
         setPosts(res.data);
       } catch (err) {
+
         console.error("게시글 조회 실패:", err);
         alert("게시글 목록을 불러오는 데 실패했습니다.");
       }
@@ -195,6 +194,7 @@ const Board = () => {
     )
     .reverse(); // 최신 글이 위로
 
+
   return (
     <Container>
       <FilterSection>
@@ -214,10 +214,12 @@ const Board = () => {
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
         {filteredPosts.map((post) => (
           <Post key={post.manipostId} onClick={() => handleDetail(post.manipostId)}>
+
             <div className="title">
               {post.title} [{post.commentCount || 0}]
             </div>
             <div className="date">{post.createdAt.split("T")[0]}</div>
+
           </Post>
         ))}
       </PostContainer>

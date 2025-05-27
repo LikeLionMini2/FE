@@ -92,6 +92,7 @@ export default function ManageDetail() {
   const [members, setMembers] = useState([]);
   const [isMatch, setIsMatch] = useState(false);
   const [isReveal, setIsReveal] = useState(false);
+  const [selectMember, setSelectMember] = useState(null);
 
   const fetchMembers = async () => {
     const token = localStorage.getItem("token");
@@ -219,6 +220,53 @@ export default function ManageDetail() {
     }
   };
 
+  const handleMemberKick = async () => {
+    if(!selectMember) {
+      alert("추방할 멤버를 선택해주세요.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    const select = members.find((m) => m.id === selectMember);
+    const nickname = select?.nickname || "이 멤버";
+
+    try {
+      console.log("멤버 추방 시작");
+      
+      const confirmKick = window.confirm(`정말로 ${nickname}님을 추방하시겠습니까?`);
+      if (!confirmKick) return;
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          memberId: selectMember
+        },
+      };
+
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/v1/groups/${id}/kick`,
+        config
+      );
+
+      alert("멤버가 성공적으로 추방되었습니다.");
+      setSelectMember(null);
+      fetchMembers();
+    } catch (err) {
+      console.error("멤버 추방 실패:", err);
+      alert("멤버 추방에 실패했습니다.");
+    }
+  };
+
   const handleGroupDelete = async () => {
     const token = localStorage.getItem("token");
 
@@ -269,13 +317,15 @@ export default function ManageDetail() {
             <MemberMatchInfo key={member.id}
               id={member.id} nickname={member.nickname}
               isMatch={isMatch} isReveal={isReveal}
-              matchId={member.matchId} matchNickname={member.matchNickname} />
+              matchId={member.matchId} matchNickname={member.matchNickname}
+              isSelect={selectMember === member.id} onClick={() => setSelectMember(member.id)} />
           ))}
         </MemberMatchInfoContainer>
       </GroupDetailContainer>
       <ButtonContainer>
         <Button buttonText="마니또 매칭" onClick={handleMatch} />
         <Button buttonText="마니또 공개" onClick={handleReveal} />
+        <Button backgroundColor="#E06A34" buttonText="멤버 추방" onClick={handleMemberKick} />
         <Button backgroundColor="#E06A34" buttonText="그룹 삭제" onClick={handleGroupDelete} />
       </ButtonContainer>
     </ManageDetailContainer>

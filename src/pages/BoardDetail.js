@@ -1,4 +1,3 @@
-// BoardDetail.js
 
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -23,6 +22,7 @@ const Box = styled.div`
   border-radius: 20px;
   font-size: 24px;
   font-weight: bold;
+
   padding: ${({ paddingTop = 0, paddingBottom = 0, paddingLeft = 0, paddingRight = 0 }) =>
     `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`};
   margin-bottom: 31px;
@@ -33,6 +33,7 @@ const TitleBox = styled(Box)`
   height: 80px;
   display: flex;
   align-items: center;
+
 `;
 
 const ContentBox = styled(Box)`
@@ -121,11 +122,16 @@ const CommentInput = styled.input`
   }
 `;
 
+const ContentWrapper = styled.div`
+  padding-top: 43px;
+`;
+
 const BoardDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
   const [post, setPost] = useState(null);
+
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedContent, setEditedContent] = useState("");
@@ -133,12 +139,14 @@ const BoardDetail = () => {
   const { groupId, manipostId } = location.state || {};
   const token = localStorage.getItem("token");
 
+
   useEffect(() => {
     if (!groupId || !manipostId) {
       alert("잘못된 접근입니다.");
       navigate("/group");
       return;
     }
+
 
     if (!token) {
       alert("로그인이 필요합니다.");
@@ -159,6 +167,7 @@ const BoardDetail = () => {
         setPost(res.data);
         setEditedTitle(res.data.title);
         setEditedContent(res.data.content);
+
       } catch (err) {
         console.error("게시글 상세 조회 실패", err);
         alert("게시글을 불러오지 못했습니다.");
@@ -166,12 +175,14 @@ const BoardDetail = () => {
     };
 
     fetchDetail();
+
   }, [groupId, manipostId, navigate, token]);
 
   const handleEdit = () => {
     if (window.confirm("수정하시겠습니까?")) {
       setIsEditing(true);
     }
+
   };
 
   const handleUpdate = async () => {
@@ -228,6 +239,7 @@ const BoardDetail = () => {
 
   return (
     <Container>
+
       <TitleBox paddingLeft={69}>
         게시글 제목:{" "}
         {isEditing ? (
