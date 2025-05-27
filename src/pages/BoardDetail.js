@@ -165,7 +165,6 @@ const BoardDetail = () => {
           }
         );
         setPost(res.data);
-
         setEditedTitle(res.data.title);
         setEditedContent(res.data.content);
 
@@ -183,6 +182,7 @@ const BoardDetail = () => {
     if (window.confirm("수정하시겠습니까?")) {
       setIsEditing(true);
     }
+
   };
 
   const handleUpdate = async () => {
@@ -281,7 +281,6 @@ const BoardDetail = () => {
         • 작성자: 익명 <br />
         댓글 2: 좋은 글이에요!
       </Box>
-
 
       <ReactionWrapper>
         <HeartIcon onClick={() => setLiked(!liked)}>

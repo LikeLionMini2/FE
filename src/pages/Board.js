@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
@@ -145,7 +144,6 @@ const Board = () => {
     navigate("/board/upload", { state: { groupId } });
   };
 
-
   const handleDetail = (manipostId) => {
     if (!groupId) return;
     navigate("/board/detail", { state: { groupId, manipostId } });
@@ -171,7 +169,7 @@ const Board = () => {
         );
         setPosts(res.data);
       } catch (err) {
-        
+
         console.error("게시글 조회 실패:", err);
         alert("게시글 목록을 불러오는 데 실패했습니다.");
       }
