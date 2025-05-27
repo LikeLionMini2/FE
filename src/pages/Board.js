@@ -132,23 +132,21 @@ const Post = styled.div`
 const Board = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id: groupId } = location.state || {};  // ✅ 여기서 groupId를 받음
+  const { id: groupId } = location.state || {}; // groupId를 location.state에서 추출
 
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
-  const navigate = useNavigate();
-
 
   const clearInput = () => setKeyword("");
 
   const handleWriteClick = () => {
     if (!groupId) return;
-    navigate(`/board/${groupId}/upload`);
+    navigate("/board/upload", { state: { groupId } });
   };
 
   const handleDetail = (postId) => {
     if (!groupId) return;
-    navigate(`/board/${groupId}/detail/${postId}`);
+    navigate("/board/detail", { state: { groupId, manipostId: postId } });
   };
 
   useEffect(() => {
@@ -211,9 +209,7 @@ const Board = () => {
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
         {filteredPosts.map((post) => (
-
           <Post key={post.manipostId} onClick={() => handleDetail(post.manipostId)}>
-
             <div className="title">{post.title}</div>
             <div className="date">{post.createdAt}</div>
           </Post>
