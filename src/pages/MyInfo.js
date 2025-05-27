@@ -78,6 +78,66 @@ const MyInfo = () => {
       console.error("저장 실패:", err.response?.data || err);
     }
   };
+
+  // const handleSave = async () => {
+  //   try {
+  //     // 닉네임 저장 요청
+  //     await axios.put(
+  //       `${process.env.REACT_APP_API_URL}/api/v1/mypage/nickname`,
+  //       { nickname: form.nickname },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     // 먼저 memberId 확인 (예: mypage 데이터에서 받아오기)
+  //     const resUser = await axios.get(
+  //       `${process.env.REACT_APP_API_URL}/api/v1/mypage`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     const memberId = resUser.data?.memberId;
+
+  //     if (!memberId) {
+  //       alert("회원 정보를 가져오지 못했습니다.");
+  //       return;
+  //     }
+
+  //     // 상태메세지 존재 여부 확인
+  //     const resMsg = await axios.get(
+  //       `${process.env.REACT_APP_API_URL}/api/v1/mypage/message`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     const hasMessage = !!resMsg.data?.message;
+
+  //     const url = `${process.env.REACT_APP_API_URL}/api/v1/mypage/message`;
+  //     const headers = {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${token}`,
+  //     };
+  //     const body = { memberId, message };
+
+  //     if (hasMessage) {
+  //       await axios.post(url, body, { headers }); // 기존 메시지가 있다면 POST
+  //     } else {
+  //       await axios.put(url, body, { headers }); // 없으면 PUT
+  //     }
+
+  //     alert("정보가 성공적으로 저장되었습니다.");
+  //   } catch (err) {
+  //     console.error("저장 실패:", err);
+  //     alert(err.response?.data?.message || "오류가 발생했습니다.");
+  //   }
+  // };
   return (
     <Container>
       <MainBox>
