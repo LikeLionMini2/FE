@@ -8,7 +8,7 @@ const MemberMatchInfoContainer = styled.div`
     width: 840px;
     height: 80px;
     border-radius: 50px;
-    background: #E0DFDD;
+    background: ${(props) => (props.isSelect ? "#CAC8C5" : "#E0DFDD")};
     padding: 20px 25px;
     display: flex;
     align-items: center;
@@ -41,7 +41,7 @@ const Name = styled.span`
     `}
 `;
 
-export default function MemberMatchInfo({ id, nickname, isMatch, isReveal, matchId, matchNickname }) {
+export default function MemberMatchInfo({ id, nickname, isMatch, isReveal, matchId, matchNickname, isSelect, onClick }) {
     const navigate = useNavigate();
 
     const handleProfile = (IsMe) => {
@@ -73,7 +73,7 @@ export default function MemberMatchInfo({ id, nickname, isMatch, isReveal, match
     }
 
     return (
-        <MemberMatchInfoContainer>
+        <MemberMatchInfoContainer isSelect={isSelect} onClick={onClick}>
             <MemberContainer>
                 <Image src={masked} />
                 <Name onClick={() => handleProfile(true)} hover>{nickname}</Name>

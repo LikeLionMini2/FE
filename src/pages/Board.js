@@ -132,7 +132,7 @@ const Post = styled.div`
 const Board = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id: groupId } = location.state || {}; // 전달된 state에서 groupId 추출
+  const { id: groupId } = location.state || {}; // groupId를 location.state에서 추출
 
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
