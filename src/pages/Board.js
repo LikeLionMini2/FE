@@ -1,31 +1,38 @@
-
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
-const Container = styled.div`
-  position: relative;
-  width: 1280px;
-  height: 720px;
-  background-color: #d8cdb9;
-  font-family: "Noto Sans KR", sans-serif;
-  padding: 50px 64px 40px;
-  overflow-x: hidden; 
-  overflow-y: auto;
+// const Wrapper = styled.div`
+//   background-color: #d8cdb9;
+//   width: 100%;
+//   min-height: 100vh;
+//   padding: 60px 60px 42px 60px; /* 상단/하단 여백 포함 */
+//   box-sizing: border-box;
+//   font-family: "Noto Sans KR", sans-serif;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// `;
 
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+const Wrapper = styled.div`
+  width: 1280px;
+  height: 100vh;
+  background: #d8cdb9;
+  /* overflow-x: hidden; */
+  /* overflow-y: auto; */
+  margin: 0 auto;
 `;
-// over flow- x 부분부터 -ms-overflow 부분까지 스크롤축이 보이지는 않지만 위아래로 스크롤이 되게끔 하는 코드
 
 const FilterSection = styled.div`
+  width: 1152px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding-bottom: 42px;
+  margin-bottom: 26px;
+  margin-top: 26px;
+  margin-left: 40px;
 `;
 
 const GroupButton = styled.button`
@@ -67,7 +74,7 @@ const SearchInput = styled.input`
   outline: none;
   background: none;
   text-align: center;
-
+  height: 100%;
   &::placeholder {
     color: #000;
     font-weight: 400;
@@ -77,12 +84,12 @@ const SearchInput = styled.input`
 const PostContainer = styled.div`
   position: relative;
   background-color: white;
-  width: 100%;
-  height: 580px;
-  padding: 100px 56px 40px 56px;
+  width: 1152px;
+  padding: 40px 56px 60px 56px;
+  /* padding-top: 100px; */
   border-radius: 30px;
   box-sizing: border-box;
-  overflow-y: auto;
+  margin-left: 40px;
 `;
 
 const WriteButton = styled.button`
@@ -100,24 +107,23 @@ const WriteButton = styled.button`
   cursor: pointer;
 `;
 
+const PostList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 28px; /* ✅ 회색 칸 간격 */
+  margin-top: 56px; /* ✅ 글쓰기 버튼과 첫 칸 간격 */
+`;
+
 const Post = styled.div`
   background-color: #e0dfdd;
   border-radius: 15px;
-  width: 100%;
+  width: 1040px;
   height: 79px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-
-  &:first-of-type {
-    margin-top: 56px;
-  }
-
-  & + & {
-    margin-top: 28px;
-  }
 
   .title {
     font-size: 15px;
@@ -134,44 +140,39 @@ const Post = styled.div`
 `;
 
 const Board = () => {
-  const { groupId } = useParams();
   const [keyword, setKeyword] = useState("");
-  const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();  // 
-  const { id } = location.state;   // 예진님이 알려준 코드 2개!
 
   const clearInput = () => setKeyword("");
-
   const handleWriteClick = () => {
-    navigate(`/board/${groupId}/upload`);
+    navigate("/board/upload");
   };
   const handleDetail = () => {
     navigate("/board/detail");
   };
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const res = await axios.get(`https://mini2team.lion.it.kr/api/v1/${groupId}/maniposts`);
-        setPosts(res.data);
-      } catch (err) {
-        console.error("게시글 불러오기 실패:", err);
-      }
-    }
-    fetchPosts();
-  }, [groupId]);
+  const posts = [
+    { title: "졸려운데 잠은 안 오고 같이 얘기할 사람[1]", date: "2025.04.18" },
+    {
+      title: "마니또라고 생각되는 사람이랑 같이 밥 먹다가....![1]",
+      date: "2025.04.18",
+    },
+    {
+      title: "새벽되니까 출출한데 야식 추천해 줄 사람 ㅋㅋㅋㅋ[3]",
+      date: "2025.04.19",
+    },
+    {
+      title: "아 나 마니또 누군지 알 것 같은데?[3]",
+      date: "2025.04.21",
+    },
+  ];
 
-  const filteredPosts = posts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(keyword.toLowerCase()) ||
-      post.content.toLowerCase().includes(keyword.toLowerCase())
-  );
+  const sortedPosts = [...posts].reverse();
 
   return (
-    <Container>
+    <Wrapper>
       <FilterSection>
-        <GroupButton>그룹 {groupId}</GroupButton>
+        <GroupButton>그룹명</GroupButton>
         <SearchContainer>
           <SearchIcon />
           <SearchInput
@@ -185,16 +186,18 @@ const Board = () => {
 
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
-        {filteredPosts.map((post) => (
-          <Post key={post.id}>
-            <div className="title">{post.title}[{post.commentCount}]</div>
-            <div className="date">{post.createdAt?.split("T")[0]}</div>
-          </Post>
-        ))}
+
+        <PostList>
+          {sortedPosts.map((post, index) => (
+            <Post key={index} onClick={handleDetail}>
+              <div className="title">{post.title}</div>
+              <div className="date">{post.date}</div>
+            </Post>
+          ))}
+        </PostList>
       </PostContainer>
-    </Container>
+    </Wrapper>
   );
 };
 
 export default Board;
-
