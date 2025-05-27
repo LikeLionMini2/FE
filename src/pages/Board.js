@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
@@ -14,13 +12,11 @@ const Container = styled.div`
   background-color: #d8cdb9;
   font-family: "Noto Sans KR", sans-serif;
   padding: 50px 64px 40px;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   overflow-y: auto;
-
   scrollbar-width: none;
   -ms-overflow-style: none;
 `;
-// over flow- x 부분부터 -ms-overflow 부분까지 스크롤축이 보이지는 않지만 위아래로 스크롤이 되게끔 하는 코드
 
 const FilterSection = styled.div`
   display: flex;
@@ -138,14 +134,13 @@ const Board = () => {
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();  // 
-  const { id } = location.state;   // 예진님이 알려준 코드 2개!
 
   const clearInput = () => setKeyword("");
 
   const handleWriteClick = () => {
     navigate(`/board/${groupId}/upload`);
   };
+
   const handleDetail = () => {
     navigate("/board/detail");
   };
@@ -153,7 +148,9 @@ const Board = () => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const res = await axios.get(`https://mini2team.lion.it.kr/api/v1/${groupId}/maniposts`);
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts`
+        );
         setPosts(res.data);
       } catch (err) {
         console.error("게시글 불러오기 실패:", err);
@@ -165,7 +162,7 @@ const Board = () => {
   const filteredPosts = posts.filter(
     (post) =>
       post.title.toLowerCase().includes(keyword.toLowerCase()) ||
-      post.content.toLowerCase().includes(keyword.toLowerCase())
+      (post.content?.toLowerCase().includes(keyword.toLowerCase()) ?? false)
   );
 
   return (
@@ -186,9 +183,9 @@ const Board = () => {
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
         {filteredPosts.map((post) => (
-          <Post key={post.id}>
-            <div className="title">{post.title}[{post.commentCount}]</div>
-            <div className="date">{post.createdAt?.split("T")[0]}</div>
+          <Post key={post.manipostId} onClick={handleDetail}>
+            <div className="title">{post.title}</div>
+            <div className="date">{post.createdAt}</div>
           </Post>
         ))}
       </PostContainer>
