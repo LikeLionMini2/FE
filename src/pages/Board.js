@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
@@ -14,13 +12,11 @@ const Container = styled.div`
   background-color: #d8cdb9;
   font-family: "Noto Sans KR", sans-serif;
   padding: 50px 64px 40px;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   overflow-y: auto;
-
   scrollbar-width: none;
   -ms-overflow-style: none;
 `;
-// over flow- x 부분부터 -ms-overflow 부분까지 스크롤축이 보이지는 않지만 위아래로 스크롤이 되게끔 하는 코드
 
 const FilterSection = styled.div`
   display: flex;
@@ -134,38 +130,65 @@ const Post = styled.div`
 `;
 
 const Board = () => {
-  const { groupId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id: groupId } = location.state || {};  // ✅ 여기서 groupId를 받음
+
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
-  const navigate = useNavigate();
-  const location = useLocation();  // 
-  const { id } = location.state;   // 예진님이 알려준 코드 2개!
 
   const clearInput = () => setKeyword("");
 
   const handleWriteClick = () => {
+    if (!groupId) return;
     navigate(`/board/${groupId}/upload`);
   };
-  const handleDetail = () => {
-    navigate("/board/detail");
+
+  const handleDetail = (postId) => {
+    if (!groupId) return;
+    navigate(`/board/${groupId}/detail/${postId}`);
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
     async function fetchPosts() {
       try {
-        const res = await axios.get(`https://mini2team.lion.it.kr/api/v1/${groupId}/maniposts`);
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setPosts(res.data);
       } catch (err) {
         console.error("게시글 불러오기 실패:", err);
+        alert("게시글 조회에 실패했습니다.");
       }
     }
-    fetchPosts();
-  }, [groupId]);
+
+    if (groupId) fetchPosts();
+  }, [groupId, navigate]);
+
+  if (!groupId) {
+    return (
+      <Container>
+        <h2>그룹이 선택되지 않았습니다. 그룹 페이지에서 접근해주세요.</h2>
+      </Container>
+    );
+  }
 
   const filteredPosts = posts.filter(
     (post) =>
       post.title.toLowerCase().includes(keyword.toLowerCase()) ||
-      post.content.toLowerCase().includes(keyword.toLowerCase())
+      (post.content && post.content.toLowerCase().includes(keyword.toLowerCase()))
   );
 
   return (
@@ -186,9 +209,9 @@ const Board = () => {
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
         {filteredPosts.map((post) => (
-          <Post key={post.id}>
-            <div className="title">{post.title}[{post.commentCount}]</div>
-            <div className="date">{post.createdAt?.split("T")[0]}</div>
+          <Post key={post.manipostId} onClick={() => handleDetail(post.manipostId)}>
+            <div className="title">{post.title}</div>
+            <div className="date">{post.createdAt}</div>
           </Post>
         ))}
       </PostContainer>
@@ -197,4 +220,3 @@ const Board = () => {
 };
 
 export default Board;
-
