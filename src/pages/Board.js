@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
@@ -132,8 +133,8 @@ const Post = styled.div`
 const Board = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id: groupId } = location.state || {}; // groupId를 location.state에서 추출
 
+  const { id: groupId } = location.state || {};
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
 
@@ -144,9 +145,10 @@ const Board = () => {
     navigate("/board/upload", { state: { groupId } });
   };
 
-  const handleDetail = (postId) => {
+
+  const handleDetail = (manipostId) => {
     if (!groupId) return;
-    navigate("/board/detail", { state: { groupId, manipostId: postId } });
+    navigate("/board/detail", { state: { groupId, manipostId } });
   };
 
   useEffect(() => {
@@ -157,7 +159,7 @@ const Board = () => {
       return;
     }
 
-    async function fetchPosts() {
+    const fetchPosts = async () => {
       try {
         const res = await axios.get(
           `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts`,
@@ -169,10 +171,11 @@ const Board = () => {
         );
         setPosts(res.data);
       } catch (err) {
-        console.error("게시글 불러오기 실패:", err);
-        alert("게시글 조회에 실패했습니다.");
+        
+        console.error("게시글 조회 실패:", err);
+        alert("게시글 목록을 불러오는 데 실패했습니다.");
       }
-    }
+    };
 
     if (groupId) fetchPosts();
   }, [groupId, navigate]);
@@ -185,11 +188,14 @@ const Board = () => {
     );
   }
 
-  const filteredPosts = posts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(keyword.toLowerCase()) ||
-      (post.content && post.content.toLowerCase().includes(keyword.toLowerCase()))
-  );
+  const filteredPosts = posts
+    .filter(
+      (post) =>
+        post.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        (post.content && post.content.toLowerCase().includes(keyword.toLowerCase()))
+    )
+    .reverse(); // 최신 글이 위로
+
 
   return (
     <Container>
@@ -210,8 +216,12 @@ const Board = () => {
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
         {filteredPosts.map((post) => (
           <Post key={post.manipostId} onClick={() => handleDetail(post.manipostId)}>
-            <div className="title">{post.title}</div>
-            <div className="date">{post.createdAt}</div>
+
+            <div className="title">
+              {post.title} [{post.commentCount || 0}]
+            </div>
+            <div className="date">{post.createdAt.split("T")[0]}</div>
+
           </Post>
         ))}
       </PostContainer>

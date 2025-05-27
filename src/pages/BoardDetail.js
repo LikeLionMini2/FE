@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -17,24 +18,27 @@ const Container = styled.div`
 
 const Box = styled.div`
   width: 1116px;
-  height: ${({ height }) => height}px;
   background-color: #ffffff;
   border-radius: 20px;
   font-size: 24px;
   font-weight: bold;
-  line-height: 1.6;
-  display: flex;
-  flex-direction: column;
+
   padding: ${({ paddingTop = 0, paddingBottom = 0, paddingLeft = 0, paddingRight = 0 }) =>
     `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`};
+  margin-bottom: 31px;
+  white-space: pre-line;
 `;
 
 const TitleBox = styled(Box)`
-  justify-content: center;
+  height: 80px;
+  display: flex;
+  align-items: center;
+
 `;
 
 const ContentBox = styled(Box)`
   position: relative;
+  min-height: 218px;
 `;
 
 const ContentLabel = styled.div`
@@ -43,21 +47,33 @@ const ContentLabel = styled.div`
 
 const PostContent = styled.div`
   margin-top: 22px;
-  white-space: pre-line;
+  font-weight: 400;
+`;
+
+const EditInput = styled.textarea`
+  width: 100%;
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 20px;
+  padding: 12px;
+  margin-top: 22px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  resize: vertical;
 `;
 
 const EditButton = styled.button`
   background-color: #e06a34;
   color: white;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
   border: none;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border-radius: 24px;
   position: absolute;
   right: 24px;
   bottom: 24px;
   cursor: pointer;
+  margin-left: 10px;
 `;
 
 const ReactionWrapper = styled.div`
@@ -110,17 +126,19 @@ const ContentWrapper = styled.div`
   padding-top: 43px;
 `;
 
-const CommentWrapper = styled.div`
-  padding-top: 31px;
-`;
-
 const BoardDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
   const [post, setPost] = useState(null);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedContent, setEditedContent] = useState("");
+
   const { groupId, manipostId } = location.state || {};
+  const token = localStorage.getItem("token");
+
 
   useEffect(() => {
     if (!groupId || !manipostId) {
@@ -129,7 +147,7 @@ const BoardDetail = () => {
       return;
     }
 
-    const token = localStorage.getItem("token");
+
     if (!token) {
       alert("로그인이 필요합니다.");
       navigate("/login");
@@ -147,6 +165,10 @@ const BoardDetail = () => {
           }
         );
         setPost(res.data);
+
+        setEditedTitle(res.data.title);
+        setEditedContent(res.data.content);
+
       } catch (err) {
         console.error("게시글 상세 조회 실패", err);
         alert("게시글을 불러오지 못했습니다.");
@@ -154,10 +176,57 @@ const BoardDetail = () => {
     };
 
     fetchDetail();
-  }, [groupId, manipostId, navigate]);
 
-  const handleEditClick = () => {
-    navigate(`/board/${groupId}/upload`, { state: { isEdit: true, post } });
+  }, [groupId, manipostId, navigate, token]);
+
+  const handleEdit = () => {
+    if (window.confirm("수정하시겠습니까?")) {
+      setIsEditing(true);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!window.confirm("수정 내용을 저장하시겠습니까?")) return;
+
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/api/v1/maniposts/${manipostId}`,
+        {
+          title: editedTitle,
+          content: editedContent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("수정 완료!");
+      navigate("/board", { state: { id: groupId } });
+    } catch (err) {
+      console.error("게시글 수정 실패", err);
+      alert("수정 실패!");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("정말로 삭제하시겠습니까?")) return;
+
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/v1/maniposts/${manipostId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("삭제 완료!");
+      navigate("/board", { state: { id: groupId } });
+    } catch (err) {
+      console.error("게시글 삭제 실패", err);
+      alert("삭제 실패!");
+    }
   };
 
   if (!post) {
@@ -170,26 +239,49 @@ const BoardDetail = () => {
 
   return (
     <Container>
-      <TitleBox height={80} paddingLeft={69}>
-        게시글 제목: {post.title} [{post.commentCount || 0}]
+
+      <TitleBox paddingLeft={69}>
+        게시글 제목:{" "}
+        {isEditing ? (
+          <EditInput
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+          />
+        ) : (
+          `${post.title} [${post.commentCount || 0}]`
+        )}
       </TitleBox>
 
-      <ContentWrapper>
-        <ContentBox height={218} paddingTop={24} paddingLeft={69} paddingRight={24}>
-          <ContentLabel>게시글 내용</ContentLabel>
+      <ContentBox paddingTop={24} paddingLeft={69} paddingRight={24}>
+        <ContentLabel>게시글 내용</ContentLabel>
+        {isEditing ? (
+          <EditInput
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+          />
+        ) : (
           <PostContent>{post.content}</PostContent>
-          <EditButton onClick={handleEditClick}>게시글 수정/삭제</EditButton>
-        </ContentBox>
-      </ContentWrapper>
+        )}
+        {post.isMyPost && (
+          <>
+            {isEditing ? (
+              <EditButton onClick={handleUpdate}>수정 완료</EditButton>
+            ) : (
+              <>
+                <EditButton onClick={handleEdit}>게시글 수정</EditButton>
+                <EditButton onClick={handleDelete}>게시글 삭제</EditButton>
+              </>
+            )}
+          </>
+        )}
+      </ContentBox>
 
-      <CommentWrapper>
-        <Box height={170} paddingTop={24} paddingBottom={24} paddingLeft={69} paddingRight={24}>
-          {/* 댓글 예시 (향후 댓글 리스트 연동 가능) */}
-          댓글 1: 예시 댓글입니다.<br />
-          • 작성자: 유저1<br />
-          댓글 2: 좋은 글이에요!
-        </Box>
-      </CommentWrapper>
+      <Box height={170} paddingTop={24} paddingBottom={24} paddingLeft={69} paddingRight={24}>
+        댓글 1: 댓글 예시입니다. <br />
+        • 작성자: 익명 <br />
+        댓글 2: 좋은 글이에요!
+      </Box>
+
 
       <ReactionWrapper>
         <HeartIcon onClick={() => setLiked(!liked)}>
