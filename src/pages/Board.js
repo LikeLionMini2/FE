@@ -1,38 +1,29 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// Board.js
+
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
-// const Wrapper = styled.div`
-//   background-color: #d8cdb9;
-//   width: 100%;
-//   min-height: 100vh;
-//   padding: 60px 60px 42px 60px; /* 상단/하단 여백 포함 */
-//   box-sizing: border-box;
-//   font-family: "Noto Sans KR", sans-serif;
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-// `;
-
-const Wrapper = styled.div`
+const Container = styled.div`
+  position: relative;
   width: 1280px;
-  height: 100vh;
-  background: #d8cdb9;
-  /* overflow-x: hidden; */
-  /* overflow-y: auto; */
-  margin: 0 auto;
+  height: 720px;
+  background-color: #d8cdb9;
+  font-family: "Noto Sans KR", sans-serif;
+  padding: 50px 64px 40px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const FilterSection = styled.div`
-  width: 1152px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 26px;
-  margin-top: 26px;
-  margin-left: 40px;
+  padding-bottom: 42px;
 `;
 
 const GroupButton = styled.button`
@@ -74,7 +65,7 @@ const SearchInput = styled.input`
   outline: none;
   background: none;
   text-align: center;
-  height: 100%;
+
   &::placeholder {
     color: #000;
     font-weight: 400;
@@ -84,12 +75,12 @@ const SearchInput = styled.input`
 const PostContainer = styled.div`
   position: relative;
   background-color: white;
-  width: 1152px;
-  padding: 40px 56px 60px 56px;
-  /* padding-top: 100px; */
+  width: 100%;
+  height: 580px;
+  padding: 100px 56px 40px 56px;
   border-radius: 30px;
   box-sizing: border-box;
-  margin-left: 40px;
+  overflow-y: auto;
 `;
 
 const WriteButton = styled.button`
@@ -107,23 +98,24 @@ const WriteButton = styled.button`
   cursor: pointer;
 `;
 
-const PostList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 28px; /* ✅ 회색 칸 간격 */
-  margin-top: 56px; /* ✅ 글쓰기 버튼과 첫 칸 간격 */
-`;
-
 const Post = styled.div`
   background-color: #e0dfdd;
   border-radius: 15px;
-  width: 1040px;
+  width: 100%;
   height: 79px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+
+  &:first-of-type {
+    margin-top: 56px;
+  }
+
+  & + & {
+    margin-top: 28px;
+  }
 
   .title {
     font-size: 15px;
@@ -140,39 +132,73 @@ const Post = styled.div`
 `;
 
 const Board = () => {
-  const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { id: groupId } = location.state || {};
+
+  const [keyword, setKeyword] = useState("");
+  const [posts, setPosts] = useState([]);
 
   const clearInput = () => setKeyword("");
+
   const handleWriteClick = () => {
-    navigate("/board/upload");
-  };
-  const handleDetail = () => {
-    navigate("/board/detail");
+    if (!groupId) return;
+    navigate("/board/upload", { state: { groupId } });
   };
 
-  const posts = [
-    { title: "졸려운데 잠은 안 오고 같이 얘기할 사람[1]", date: "2025.04.18" },
-    {
-      title: "마니또라고 생각되는 사람이랑 같이 밥 먹다가....![1]",
-      date: "2025.04.18",
-    },
-    {
-      title: "새벽되니까 출출한데 야식 추천해 줄 사람 ㅋㅋㅋㅋ[3]",
-      date: "2025.04.19",
-    },
-    {
-      title: "아 나 마니또 누군지 알 것 같은데?[3]",
-      date: "2025.04.21",
-    },
-  ];
+  const handleDetail = (manipostId) => {
+    if (!groupId) return;
+    navigate("/board/detail", { state: { groupId, manipostId } });
+  };
 
-  const sortedPosts = [...posts].reverse();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    const fetchPosts = async () => {
+      try {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setPosts(res.data);
+      } catch (err) {
+        console.error("게시글 조회 실패:", err);
+        alert("게시글 목록을 불러오는 데 실패했습니다.");
+      }
+    };
+
+    if (groupId) fetchPosts();
+  }, [groupId, navigate]);
+
+  if (!groupId) {
+    return (
+      <Container>
+        <h2>그룹이 선택되지 않았습니다. 그룹 페이지에서 접근해주세요.</h2>
+      </Container>
+    );
+  }
+
+  const filteredPosts = posts
+    .filter(
+      (post) =>
+        post.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        (post.content && post.content.toLowerCase().includes(keyword.toLowerCase()))
+    )
+    .reverse(); // 최신 글이 위로
 
   return (
-    <Wrapper>
+    <Container>
       <FilterSection>
-        <GroupButton>그룹명</GroupButton>
+        <GroupButton>그룹 {groupId}</GroupButton>
         <SearchContainer>
           <SearchIcon />
           <SearchInput
@@ -186,17 +212,16 @@ const Board = () => {
 
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
-
-        <PostList>
-          {sortedPosts.map((post, index) => (
-            <Post key={index} onClick={handleDetail}>
-              <div className="title">{post.title}</div>
-              <div className="date">{post.date}</div>
-            </Post>
-          ))}
-        </PostList>
+        {filteredPosts.map((post) => (
+          <Post key={post.manipostId} onClick={() => handleDetail(post.manipostId)}>
+            <div className="title">
+              {post.title} [{post.commentCount || 0}]
+            </div>
+            <div className="date">{post.createdAt.split("T")[0]}</div>
+          </Post>
+        ))}
       </PostContainer>
-    </Wrapper>
+    </Container>
   );
 };
 
