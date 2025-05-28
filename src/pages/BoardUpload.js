@@ -1,228 +1,175 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaSearch } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
 
-const Container = styled.div`
-  position: relative;
-  width: 1280px;
-  height: 720px;
+// ✅ 전체 배경 컨테이너
+const OuterContainer = styled.div`
   background-color: #d8cdb9;
-  font-family: "Noto Sans KR", sans-serif;
-  padding: 50px 64px 40px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-`;
-
-const FilterSection = styled.div`
+  height: 720px;
   display: flex;
-  justify-content: space-between;
-  padding-bottom: 42px;
-`;
-
-const GroupButton = styled.button`
-  width: 217px;
-  height: 45px;
-  background-color: white;
-  border: none;
-  border-radius: 30px;
-  font-size: 20px;
-  font-weight: bold;
-`;
-
-const SearchContainer = styled.div`
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  background-color: white;
-  border-radius: 30px;
-  padding: 0 20px;
-  width: 720px;
-  height: 45px;
+  justify-content: flex-start;
+  padding-top: 28px; /* ✅ 버튼 위 간격을 여기서 확보 */
+  font-family: "Noto Sans KR", sans-serif;
 `;
 
-const SearchIcon = styled(FaSearch)`
-  font-size: 18px;
-  margin-right: 10px;
-  color: gray;
-`;
-
-const ClearButton = styled(IoMdClose)`
-  font-size: 22px;
-  color: gray;
-  cursor: pointer;
-`;
-
-const SearchInput = styled.input`
-  flex: 1;
-  font-size: 16px;
-  border: none;
-  outline: none;
-  background: none;
-  text-align: center;
-
-  &::placeholder {
-    color: #000;
-    font-weight: 400;
-  }
-`;
-
-const PostContainer = styled.div`
-  position: relative;
-  background-color: white;
-  width: 100%;
-  height: 580px;
-  padding: 100px 56px 40px 56px;
-  border-radius: 30px;
+// ✅ 흰색 박스
+const WhiteBox = styled.div`
+  background-color: #ffffff;
+  width: 1152px;
+  height: 560px;
+  border-radius: 15px;
+  padding: 42px 60px 0 60px;
   box-sizing: border-box;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 `;
 
-const WriteButton = styled.button`
-  position: absolute;
-  top: 40px;
-  right: 56px;
-  width: 178px;
-  height: 50px;
+// ✅ 입력 섹션
+const FormSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 57px;
+`;
+
+const InputRow = styled.div`
+  display: flex;
+`;
+
+const Label = styled.label`
+  font-size: 24px;
+  font-weight: 700;
+  width: 130px;
+  padding-right: 25px;
+  white-space: nowrap;
+`;
+
+const TitleLabel = styled(Label)`
+  padding-top: 22px; /* ✅ margin → padding */
+`;
+
+const ContentLabel = styled(Label)`
+  padding-top: 4px; /* ✅ margin → padding */
+`;
+
+const TitleInput = styled.input`
+  width: 919px;
+  height: 70px;
+  border-radius: 20px;
+  background-color: #e0dfdd;
+  border: none;
+  padding: 0 20px;
+  font-size: 16px;
+`;
+
+const ContentTextarea = styled.textarea`
+  width: 919px;
+  height: 349px;
+  border-radius: 20px;
+  background-color: #e0dfdd;
+  border: none;
+  padding: 20px;
+  font-size: 16px;
+  resize: none;
+`;
+
+// ✅ 버튼 영역 (WhiteBox 바깥)
+const ButtonWrapper = styled.div`
+  width: 1152px;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 28px; /* ✅ margin → padding */
+`;
+
+const Button = styled.button`
+  width: 192px;
+  height: 60px;
   background-color: #e06a34;
   color: white;
   border: none;
-  border-radius: 30px;
-  font-size: 20px;
-  font-weight: bold;
+  border-radius: 60px;
+  font-size: 24px;
+  font-weight: 700;
   cursor: pointer;
 `;
 
-const Post = styled.div`
-  background-color: #e0dfdd;
-  border-radius: 15px;
-  width: 100%;
-  height: 79px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-  &:first-of-type {
-    margin-top: 56px;
-  }
-
-  & + & {
-    margin-top: 28px;
-  }
-
-  .title {
-    font-size: 15px;
-    font-weight: 500;
-    color: black;
-    margin-bottom: 5px;
-  }
-
-  .date {
-    font-size: 15px;
-    font-weight: 400;
-    color: black;
-  }
-`;
-
-const Board = () => {
-  const navigate = useNavigate();
+function BoardUpload() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const groupId = location.state?.groupId;
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
-  const { id: groupId } = location.state || {};
-  const [keyword, setKeyword] = useState("");
-  const [posts, setPosts] = useState([]);
-
-  const clearInput = () => setKeyword("");
-
-  const handleWriteClick = () => {
-    if (!groupId) return;
-    navigate("/board/upload", { state: { groupId } });
-  };
-
-  const handleDetail = (postId) => {
-    if (!groupId) return;
-    navigate("/board/detail", {
-      state: { groupId: groupId, postId: postId, }, // ✅ 여기 수정!
-    });
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
+  const handleSubmit = async () => {
+    if (!groupId) {
+      alert("groupId가 없습니다.");
       return;
     }
 
-    const fetchPosts = async () => {
-      try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setPosts(res.data);
-      } catch (err) {
-        console.error("게시글 조회 실패:", err);
-        alert("게시글 목록을 불러오는 데 실패했습니다.");
-      }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    const payload = {
+      groupId,
+      title,
+      content,
     };
 
-    if (groupId) fetchPosts();
-  }, [groupId, navigate]);
-
-  if (!groupId) {
-    return (
-      <Container>
-        <h2>그룹이 선택되지 않았습니다. 그룹 페이지에서 접근해주세요.</h2>
-      </Container>
-    );
-  }
-
-  const filteredPosts = posts
-    .filter(
-      (post) =>
-        post.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        (post.content && post.content.toLowerCase().includes(keyword.toLowerCase()))
-    )
-    .reverse(); // 최신 글이 위로
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/v1/maniposts`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("업로드 성공:", res.data);
+      navigate("/board", { state: { groupId } });
+    } catch (error) {
+      console.error(
+        "업로드 실패",
+        error.response?.status,
+        error.response?.data
+      );
+      alert("업로드에 실패했습니다.");
+    }
+  };
 
   return (
-    <Container>
-      <FilterSection>
-        <GroupButton>그룹 {groupId}</GroupButton>
-        <SearchContainer>
-          <SearchIcon />
-          <SearchInput
-            placeholder="게시글 제목 또는 내용을 입력해주세요"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-          {keyword && <ClearButton onClick={clearInput} />}
-        </SearchContainer>
-      </FilterSection>
+    <OuterContainer>
+      <WhiteBox>
+        <FormSection>
+          <InputRow>
+            <TitleLabel>게시글 제목</TitleLabel>
+            <TitleInput
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </InputRow>
+          <InputRow>
+            <ContentLabel>게시글 내용</ContentLabel>
+            <ContentTextarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          </InputRow>
+        </FormSection>
+      </WhiteBox>
 
-      <PostContainer>
-        <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
-        {filteredPosts.map((post) => (
-          <Post key={post.id} onClick={() => handleDetail(post.id)}>
-            <div className="title">
-              {post.title} [{post.commentCount || 0}]
-            </div>
-            <div className="date">{post.createdAt.split("T")[0]}</div>
-          </Post>
-        ))}
-      </PostContainer>
-    </Container>
+      <ButtonWrapper>
+        <Button onClick={handleSubmit}>완료</Button>
+      </ButtonWrapper>
+    </OuterContainer>
   );
-};
+}
 
-export default Board;
+export default BoardUpload;
