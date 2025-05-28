@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -22,7 +21,6 @@ const Box = styled.div`
   border-radius: 20px;
   font-size: 24px;
   font-weight: bold;
-
   padding: ${({ paddingTop = 0, paddingBottom = 0, paddingLeft = 0, paddingRight = 0 }) =>
     `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`};
   margin-bottom: 31px;
@@ -33,7 +31,6 @@ const TitleBox = styled(Box)`
   height: 80px;
   display: flex;
   align-items: center;
-
 `;
 
 const ContentBox = styled(Box)`
@@ -131,22 +128,22 @@ const BoardDetail = () => {
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
   const [post, setPost] = useState(null);
-
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedContent, setEditedContent] = useState("");
 
-  const { groupId, manipostId } = location.state || {};
+  const { groupId, postId } = location.state || {};
+
   const token = localStorage.getItem("token");
 
-
   useEffect(() => {
-    if (!groupId || !manipostId) {
+    console.log("location.state:", location.state); // ✅ 디버깅용
+
+    if (!groupId || !postId) {
       alert("잘못된 접근입니다.");
       navigate("/group");
       return;
     }
-
 
     if (!token) {
       alert("로그인이 필요합니다.");
@@ -157,7 +154,7 @@ const BoardDetail = () => {
     const fetchDetail = async () => {
       try {
         const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts/${manipostId}`,
+          `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts/${postId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -167,7 +164,6 @@ const BoardDetail = () => {
         setPost(res.data);
         setEditedTitle(res.data.title);
         setEditedContent(res.data.content);
-
       } catch (err) {
         console.error("게시글 상세 조회 실패", err);
         alert("게시글을 불러오지 못했습니다.");
@@ -175,14 +171,12 @@ const BoardDetail = () => {
     };
 
     fetchDetail();
-
-  }, [groupId, manipostId, navigate, token]);
+  }, [groupId, postId, navigate, token]);
 
   const handleEdit = () => {
     if (window.confirm("수정하시겠습니까?")) {
       setIsEditing(true);
     }
-
   };
 
   const handleUpdate = async () => {
@@ -190,7 +184,7 @@ const BoardDetail = () => {
 
     try {
       await axios.put(
-        `${process.env.REACT_APP_API_URL}/api/v1/maniposts/${manipostId}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/maniposts/${postId}`,
         {
           title: editedTitle,
           content: editedContent,
@@ -214,7 +208,7 @@ const BoardDetail = () => {
 
     try {
       await axios.delete(
-        `${process.env.REACT_APP_API_URL}/api/v1/maniposts/${manipostId}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/maniposts/${postId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -239,7 +233,6 @@ const BoardDetail = () => {
 
   return (
     <Container>
-
       <TitleBox paddingLeft={69}>
         게시글 제목:{" "}
         {isEditing ? (
