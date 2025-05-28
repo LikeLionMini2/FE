@@ -1,6 +1,7 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+import axios from 'axios';
 
 // ✅ 전체 배경 컨테이너
 const OuterContainer = styled.div`
@@ -10,7 +11,7 @@ const OuterContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 28px; /* ✅ 버튼 위 간격을 여기서 확보 */
+  padding-top: 28px;
   font-family: 'Noto Sans KR', sans-serif;
 `;
 
@@ -46,11 +47,11 @@ const Label = styled.label`
 `;
 
 const TitleLabel = styled(Label)`
-  padding-top: 22px; /* ✅ margin → padding */
+  padding-top: 22px;
 `;
 
 const ContentLabel = styled(Label)`
-  padding-top: 4px; /* ✅ margin → padding */
+  padding-top: 4px;
 `;
 
 const TitleInput = styled.input`
@@ -74,12 +75,12 @@ const ContentTextarea = styled.textarea`
   resize: none;
 `;
 
-// ✅ 버튼 영역 (WhiteBox 바깥)
+// ✅ 버튼 영역
 const ButtonWrapper = styled.div`
   width: 1152px;
   display: flex;
   justify-content: flex-end;
-  padding-top: 28px; /* ✅ margin → padding */
+  padding-top: 28px;
 `;
 
 const Button = styled.button`
@@ -97,8 +98,40 @@ const Button = styled.button`
 function BoardUpload() {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate('/Board');
+  const location = useLocation();
+  const { groupId } = location.state || {};
+
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const handleClick = async () => {
+    if (!groupId) {
+      alert("그룹 정보가 없습니다.");
+      return;
+    }
+    if (!title || !content) {
+      alert("제목과 내용을 모두 입력해주세요.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/v1/maniposts`, {
+        title,
+        content,
+        groupId,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("게시글이 등록되었습니다.");
+      navigate("/board", { state: { id: groupId } });
+    } catch (err) {
+      console.error("게시글 등록 실패", err);
+      alert("게시글 등록에 실패했습니다.");
+    }
   };
 
   return (
@@ -107,11 +140,11 @@ function BoardUpload() {
         <FormSection>
           <InputRow>
             <TitleLabel>게시글 제목</TitleLabel>
-            <TitleInput />
+            <TitleInput value={title} onChange={(e) => setTitle(e.target.value)} />
           </InputRow>
           <InputRow>
             <ContentLabel>게시글 내용</ContentLabel>
-            <ContentTextarea />
+            <ContentTextarea value={content} onChange={(e) => setContent(e.target.value)} />
           </InputRow>
         </FormSection>
       </WhiteBox>
@@ -124,4 +157,3 @@ function BoardUpload() {
 }
 
 export default BoardUpload;
-
