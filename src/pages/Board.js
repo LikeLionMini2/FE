@@ -106,6 +106,7 @@ const Post = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
+  cursor: pointer;
 
   &:first-of-type {
     margin-top: 56px;
@@ -140,13 +141,22 @@ const Board = () => {
   const clearInput = () => setKeyword("");
 
   const handleWriteClick = () => {
-    if (!groupId) return;
+    if (!groupId) {
+      alert("그룹 정보가 없습니다.");
+      return;
+    }
     navigate("/board/upload", { state: { groupId } });
   };
 
-  const handleDetail = (manipostId) => {
-    if (!groupId) return;
-    navigate("/board/detail", { state: { groupId, manipostId } });
+  const handleDetail = (postId) => {
+    if (!groupId || !postId) {
+      alert("게시글 상세 정보가 부족합니다.");
+      return;
+    }
+    console.log("navigate 시 전달하는 값:", groupId)
+    navigate("/board/detail", {
+      state: { groupId, postId },
+    });
   };
 
   useEffect(() => {
@@ -167,15 +177,17 @@ const Board = () => {
             },
           }
         );
+      
         setPosts(res.data);
       } catch (err) {
-
         console.error("게시글 조회 실패:", err);
         alert("게시글 목록을 불러오는 데 실패했습니다.");
       }
     };
 
-    if (groupId) fetchPosts();
+    if (groupId) {
+      fetchPosts();
+    }
   }, [groupId, navigate]);
 
   if (!groupId) {
@@ -193,7 +205,6 @@ const Board = () => {
         (post.content && post.content.toLowerCase().includes(keyword.toLowerCase()))
     )
     .reverse(); // 최신 글이 위로
-
 
   return (
     <Container>
@@ -213,13 +224,9 @@ const Board = () => {
       <PostContainer>
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
         {filteredPosts.map((post) => (
-          <Post key={post.manipostId} onClick={() => handleDetail(post.manipostId)}>
-
-            <div className="title">
-              {post.title} [{post.commentCount || 0}]
-            </div>
+          <Post key={post.id} onClick={() => handleDetail(post.id)}>
+            <div className="title">{post.title} [{post.commentCount || 0}]</div>
             <div className="date">{post.createdAt.split("T")[0]}</div>
-
           </Post>
         ))}
       </PostContainer>
