@@ -13,6 +13,10 @@ const MemberMatchInfoContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    &:hover {
+        background: #CAC8C5;
+    }
 `;
 
 const MemberContainer = styled.div`

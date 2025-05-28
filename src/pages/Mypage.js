@@ -262,7 +262,7 @@ export default function Mypage() {
         <GuestbookInputContainer>
           <Input type="text" value={guestBook} placeholder="방명록을 남겨주세요"
             onChange={(e) => setGuestBook(e.target.value)}
-            onKeyDown={(e) => { if(e.key == "Enter") handleGusetBookSend(); }} />
+            onKeyDown={(e) => { if(e.key === "Enter") handleGusetBookSend(); }} />
           <Icon onClick={handleGusetBookSend} />
         </GuestbookInputContainer>
       </GuestbookContainer>
