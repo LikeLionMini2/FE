@@ -8,7 +8,14 @@ const MyInfo = () => {
   if (!token) {
     alert("로그인이 필요합니다.");
   }
-  const [message, setMessage] = useState("");
+
+  // 초기값을 로컬스토리지에서 불러오기
+  const [message, setMessage] = useState(
+    () => localStorage.getItem("message") || ""
+  );
+  const [isMessagePosted, setIsMessagePosted] = useState(() => {
+    return localStorage.getItem("isMessagePosted") === "true";
+  });
   const [form, setForm] = useState({
     nickname: "",
     email: "",
@@ -16,7 +23,6 @@ const MyInfo = () => {
     newPassword: "",
     confirmPassword: "",
   });
-
   // 회원 정보 GET 요청
   useEffect(() => {
     axios
@@ -39,50 +45,25 @@ const MyInfo = () => {
       });
   }, [token]);
 
+  // message가 바뀔 때 로컬스토리지에 저장
+  useEffect(() => {
+    localStorage.setItem("message", message);
+  }, [message]);
+
+  // isMessagePosted가 바뀔 때 로컬스토리지에 저장
+  useEffect(() => {
+    localStorage.setItem("isMessagePosted", isMessagePosted.toString());
+  }, [isMessagePosted]);
+
   const handleChange = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value });
   };
 
-  const handleSave = async () => {
-    try {
-      console.log("닉네임 저장 요청 보냄:", form.nickname);
-      console.log("토큰:", token);
-      const res1 = await axios.put(
-        `${process.env.REACT_APP_API_URL}/api/v1/mypage/nickname`,
-        { nickname: form.nickname },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("닉네임 저장 응답:", res1.data);
-
-      console.log("상태메세지 저장 요청 보냄:", message);
-      const res2 = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/v1/mypage/message`,
-        { message },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("상태메세지 저장 응답:", res2.data);
-
-      alert("정보가 성공적으로 저장되었습니다.");
-    } catch (err) {
-      console.error("저장 실패:", err);
-      alert(err.response?.data?.message || "오류가 발생했습니다.");
-      console.error("저장 실패:", err.response?.data || err);
-    }
-  };
-
   // const handleSave = async () => {
   //   try {
-  //     // 닉네임 저장 요청
-  //     await axios.put(
+  //     console.log("닉네임 저장 요청 보냄:", form.nickname);
+  //     console.log("토큰:", token);
+  //     const res1 = await axios.put(
   //       `${process.env.REACT_APP_API_URL}/api/v1/mypage/nickname`,
   //       { nickname: form.nickname },
   //       {
@@ -91,53 +72,70 @@ const MyInfo = () => {
   //         },
   //       }
   //     );
+  //     console.log("닉네임 저장 응답:", res1.data);
 
-  //     // 먼저 memberId 확인 (예: mypage 데이터에서 받아오기)
-  //     const resUser = await axios.get(
-  //       `${process.env.REACT_APP_API_URL}/api/v1/mypage`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     const memberId = resUser.data?.memberId;
-
-  //     if (!memberId) {
-  //       alert("회원 정보를 가져오지 못했습니다.");
-  //       return;
-  //     }
-
-  //     // 상태메세지 존재 여부 확인
-  //     const resMsg = await axios.get(
+  //     console.log("상태메세지 저장 요청 보냄:", message);
+  //     const res2 = await axios.post(
   //       `${process.env.REACT_APP_API_URL}/api/v1/mypage/message`,
+  //       { message },
   //       {
   //         headers: {
+  //           "Content-Type": "application/json",
   //           Authorization: `Bearer ${token}`,
   //         },
   //       }
   //     );
-  //     const hasMessage = !!resMsg.data?.message;
-
-  //     const url = `${process.env.REACT_APP_API_URL}/api/v1/mypage/message`;
-  //     const headers = {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${token}`,
-  //     };
-  //     const body = { memberId, message };
-
-  //     if (hasMessage) {
-  //       await axios.post(url, body, { headers }); // 기존 메시지가 있다면 POST
-  //     } else {
-  //       await axios.put(url, body, { headers }); // 없으면 PUT
-  //     }
+  //     console.log("상태메세지 저장 응답:", res2.data);
 
   //     alert("정보가 성공적으로 저장되었습니다.");
   //   } catch (err) {
   //     console.error("저장 실패:", err);
   //     alert(err.response?.data?.message || "오류가 발생했습니다.");
+  //     console.error("저장 실패:", err.response?.data || err);
   //   }
   // };
+
+  const handleSave = async () => {
+    try {
+      // 닉네임 저장
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/api/v1/mypage/nickname`,
+        { nickname: form.nickname },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // 상태메세지 저장: 처음만 POST, 이후는 PUT
+      const method = isMessagePosted ? "put" : "post";
+      const url = `${process.env.REACT_APP_API_URL}/api/v1/mypage/message`;
+
+      console.log(`${method.toUpperCase()} 요청 보냄:`, message);
+
+      const res = await axios({
+        method,
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        data: { message },
+      });
+
+      console.log(`상태메세지 ${method.toUpperCase()} 응답:`, res.data);
+
+      alert("정보가 성공적으로 저장되었습니다.");
+
+      // 처음 POST가 끝났으면 isMessagePosted를 true로 전환
+      if (!isMessagePosted) setIsMessagePosted(true);
+    } catch (err) {
+      console.error("저장 실패:", err);
+      alert(err.response?.data?.message || "오류가 발생했습니다.");
+    }
+  };
+
   return (
     <Container>
       <MainBox>
