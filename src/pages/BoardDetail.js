@@ -13,6 +13,8 @@ const Container = styled.div`
   margin: 0 auto;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const Box = styled.div`
@@ -25,6 +27,7 @@ const Box = styled.div`
     `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`};
   margin-bottom: 31px;
   white-space: pre-line;
+  line-height: 30px;
 `;
 
 const TitleBox = styled(Box)`
@@ -95,11 +98,13 @@ const CommentIcon = styled.div`
 const CommentInputBox = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background-color: white;
   width: 1116px;
   height: 68px;
   border-radius: 20px;
-  padding: 0 24px 0 69px;
+  padding: 0 69px;
+  gap: 15px;
 `;
 
 const CommentInput = styled.input`
@@ -119,6 +124,22 @@ const CommentInput = styled.input`
   }
 `;
 
+const CommentButton = styled.button`
+  width: 100px;
+  height: 50px;
+  background: #e06a34;
+  border: none;
+  border-radius: 30px;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+`;
+
 const ContentWrapper = styled.div`
   padding-top: 43px;
 `;
@@ -131,14 +152,14 @@ const BoardDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedContent, setEditedContent] = useState("");
+  const [comments, setComments] = useState([]);
+  const [comment, setComment] = useState("");
 
   const { groupId, postId } = location.state || {};
 
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    console.log("location.state:", location.state); // ✅ 디버깅용
-
+  const fetchDetail = async () => {
     if (!groupId || !postId) {
       alert("잘못된 접근입니다.");
       navigate("/group");
@@ -150,25 +171,30 @@ const BoardDetail = () => {
       navigate("/login");
       return;
     }
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(res.data);
+      setPost(res.data);
+      setEditedTitle(res.data.title);
+      setEditedContent(res.data.content);
+      setComments(res.data.comments);
+    } catch (err) {
+      console.error("게시글 상세 조회 실패", err);
+      alert("게시글을 불러오지 못했습니다.");
+    }
+  };
 
-    const fetchDetail = async () => {
-      try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/v1/${groupId}/maniposts/${postId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setPost(res.data);
-        setEditedTitle(res.data.title);
-        setEditedContent(res.data.content);
-      } catch (err) {
-        console.error("게시글 상세 조회 실패", err);
-        alert("게시글을 불러오지 못했습니다.");
-      }
-    };
+  useEffect(() => {
+    console.log("location.state:", location.state);
+
+    
 
     fetchDetail();
   }, [groupId, postId, navigate, token]);
@@ -223,6 +249,41 @@ const BoardDetail = () => {
     }
   };
 
+  const handleCommentMake = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      console.log("댓글 생성 시작");
+
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/v1/comments`,
+        {
+          maniPostId: postId,
+          content: comment
+        },
+        config
+      );
+      setComment("");
+      fetchDetail();
+    } catch (err) {
+      console.error("댓글 생성 오류:", err);
+      alert("댓글을 생성하는 데 실패했습니다.");
+    }
+  };
+
   if (!post) {
     return (
       <Container>
@@ -269,10 +330,12 @@ const BoardDetail = () => {
         )}
       </ContentBox>
 
-      <Box height={170} paddingTop={24} paddingBottom={24} paddingLeft={69} paddingRight={24}>
-        댓글 1: 댓글 예시입니다. <br />
-        • 작성자: 익명 <br />
-        댓글 2: 좋은 글이에요!
+      <Box height={170} paddingTop={24} paddingBottom={24} paddingLeft={69} paddingRight={69}>
+        {comments.map((comment) => (
+          <div key={comment.id} style={{ paddingBottom: "16px", paddingTop: "16px" }}>
+            <strong>{comment.writer}</strong>: {comment.content}
+          </div>
+        ))}
       </Box>
 
       <ReactionWrapper>
@@ -285,7 +348,8 @@ const BoardDetail = () => {
       </ReactionWrapper>
 
       <CommentInputBox>
-        <CommentInput placeholder="댓글 달기" />
+        <CommentInput placeholder="댓글 달기" value={comment} onChange={(e) => setComment(e.target.value)} />
+        <CommentButton onClick={handleCommentMake} >댓글 달기</CommentButton>
       </CommentInputBox>
     </Container>
   );
