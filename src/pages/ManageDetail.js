@@ -288,7 +288,7 @@ export default function ManageDetail() {
       const confirmDelete = window.confirm("정말로 이 그룹을 삭제하시겠습니까?");
       if (!confirmDelete) return;
       
-      const res = await axios.delete(
+      await axios.delete(
         `${process.env.REACT_APP_API_URL}/api/v1/groups/${id}`,
         config
       );

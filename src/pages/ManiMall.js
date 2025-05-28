@@ -3,8 +3,14 @@ import styled from "styled-components";
 import { useState } from "react";
 
 const PageWrapper = styled.div`
+  width: 1280px;
+  height: 720px;
   padding: 48px;
-  min-height: 100vh;
+  
+  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const SearchTitle = styled.h2`

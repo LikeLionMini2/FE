@@ -23,6 +23,9 @@ const SmallCarrotImage = styled.img`
 `;
 
 const PageWrapper = styled.div`
+  width: 1280px;
+  height: 720px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
