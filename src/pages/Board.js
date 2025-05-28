@@ -135,6 +135,8 @@ const Board = () => {
   const location = useLocation();
 
   const { id: groupId } = location.state || {};
+  console.log("location.state:", location.state);
+  console.log("현재 그룹 ID:", groupId);
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
 
@@ -153,19 +155,16 @@ const Board = () => {
       alert("게시글 상세 정보가 부족합니다.");
       return;
     }
-    console.log("navigate 시 전달하는 값:", groupId)
+    console.log("navigate 시 전달하는 값:", groupId);
     navigate("/board/detail", {
       state: { groupId, postId },
     });
   };
 
   useEffect(() => {
+    console.log("현재 그룹 ID:", groupId);
+
     const token = localStorage.getItem("token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-      return;
-    }
 
     const fetchPosts = async () => {
       try {
@@ -177,7 +176,7 @@ const Board = () => {
             },
           }
         );
-      
+
         setPosts(res.data);
       } catch (err) {
         console.error("게시글 조회 실패:", err);
@@ -187,22 +186,17 @@ const Board = () => {
 
     if (groupId) {
       fetchPosts();
+    } else {
+      console.log("그룹 ID가 없습니다.");
     }
   }, [groupId, navigate]);
-
-  if (!groupId) {
-    return (
-      <Container>
-        <h2>그룹이 선택되지 않았습니다. 그룹 페이지에서 접근해주세요.</h2>
-      </Container>
-    );
-  }
 
   const filteredPosts = posts
     .filter(
       (post) =>
         post.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        (post.content && post.content.toLowerCase().includes(keyword.toLowerCase()))
+        (post.content &&
+          post.content.toLowerCase().includes(keyword.toLowerCase()))
     )
     .reverse(); // 최신 글이 위로
 
@@ -225,7 +219,9 @@ const Board = () => {
         <WriteButton onClick={handleWriteClick}>글쓰기</WriteButton>
         {filteredPosts.map((post) => (
           <Post key={post.id} onClick={() => handleDetail(post.id)}>
-            <div className="title">{post.title} [{post.commentCount || 0}]</div>
+            <div className="title">
+              {post.title} [{post.commentCount || 0}]
+            </div>
             <div className="date">{post.createdAt.split("T")[0]}</div>
           </Post>
         ))}
